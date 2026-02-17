@@ -1,0 +1,31 @@
+# Build outputs
+circuits/build/
+contracts/out/
+contracts/cache/
+prover/target/
+
+# Secrets
+.env
+*.key
+*_secret*
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Large files
+*.ptau
+*.zkey
+
+# Keep structure
+!.gitkeep
