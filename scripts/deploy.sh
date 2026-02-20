@@ -31,9 +31,12 @@ echo "Deploying Simple Verifier..."
 
 cd $CONTRACTS_DIR
 
-SIMPLE_DEPLOY=$(forge create --rpc-url $SEPOLIA_RPC_URL \
+SIMPLE_DEPLOY=$(forge create \
+    --rpc-url $SEPOLIA_RPC_URL \
     --private-key $PRIVATE_KEY \
+    --broadcast \
     src/Verifier.sol:Groth16Verifier 2>&1)
+
 
 SIMPLE_ADDRESS=$(echo "$SIMPLE_DEPLOY" | grep "Deployed to:" | awk '{print $3}')
 
@@ -50,8 +53,10 @@ sleep 5  # Wait between deployments
 # Deploy State Commitment Verifier
 echo "Deploying State Commitment Verifier..."
 
-STATE_DEPLOY=$(forge create --rpc-url $SEPOLIA_RPC_URL \
+STATE_DEPLOY=$(forge create \
+    --rpc-url $SEPOLIA_RPC_URL \
     --private-key $PRIVATE_KEY \
+    --broadcast \
     src/StateCommitmentVerifier.sol:Groth16Verifier 2>&1)
 
 STATE_ADDRESS=$(echo "$STATE_DEPLOY" | grep "Deployed to:" | awk '{print $3}')
@@ -69,8 +74,10 @@ sleep 5
 # Deploy Morph Validator Verifier
 echo "Deploying Morph Validator Verifier..."
 
-MORPH_DEPLOY=$(forge create --rpc-url $SEPOLIA_RPC_URL \
+MORPH_DEPLOY=$(forge create \
+    --rpc-url $SEPOLIA_RPC_URL \
     --private-key $PRIVATE_KEY \
+    --broadcast \
     src/MorphValidatorVerifier.sol:Groth16Verifier 2>&1)
 
 MORPH_ADDRESS=$(echo "$MORPH_DEPLOY" | grep "Deployed to:" | awk '{print $3}')
@@ -88,8 +95,10 @@ sleep 5
 # Deploy Universal Verifier
 echo "Deploying Universal Verifier..."
 
-UNIVERSAL_DEPLOY=$(forge create --rpc-url $SEPOLIA_RPC_URL \
+UNIVERSAL_DEPLOY=$(forge create \
+ --rpc-url $SEPOLIA_RPC_URL \
     --private-key $PRIVATE_KEY \
+    --broadcast \
     src/UniversalVerifier.sol:UniversalVerifier 2>&1)
 
 UNIVERSAL_ADDRESS=$(echo "$UNIVERSAL_DEPLOY" | grep "Deployed to:" | awk '{print $3}')
@@ -108,10 +117,13 @@ sleep 5
 echo "Deploying Morph Controller..."
 
 if [ -n "$UNIVERSAL_ADDRESS" ]; then
-    CONTROLLER_DEPLOY=$(forge create --rpc-url $SEPOLIA_RPC_URL \
-        --private-key $PRIVATE_KEY \
-        --constructor-args $UNIVERSAL_ADDRESS \
-        src/MorphController.sol:MorphController 2>&1)
+    CONTROLLER_DEPLOY=$(forge create \
+  --rpc-url $SEPOLIA_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast \
+  src/MorphController.sol:MorphController \
+  --constructor-args 0x4b025e68748e6BCE8EaaEa92cb8aF47604595D71
+)
     
     CONTROLLER_ADDRESS=$(echo "$CONTROLLER_DEPLOY" | grep "Deployed to:" | awk '{print $3}')
     

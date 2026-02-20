@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "./UniversalVerifier.sol";
+import {UniversalVerifier} from "./UniversalVerifier.sol";
 
 /**
  * @title MorphController
@@ -31,10 +31,15 @@ contract MorphController {
     
     address public owner;
     
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Not owner");
-        _;
-    }
+   modifier onlyOwner() {
+    _onlyOwner();
+    _;
+}
+
+function _onlyOwner() internal view {
+    require(msg.sender == owner, "Not owner");
+}
+
     
     constructor(address _verifier) {
         owner = msg.sender;

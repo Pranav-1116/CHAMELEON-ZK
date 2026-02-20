@@ -60,9 +60,14 @@ contract UniversalVerifier {
     address public owner;
     
     modifier onlyOwner() {
-        require(msg.sender == owner, "Not owner");
-        _;
-    }
+    _onlyOwner();
+    _;
+}
+
+function _onlyOwner() internal view {
+    require(msg.sender == owner, "Not owner");
+}
+
     
     constructor() {
         owner = msg.sender;
