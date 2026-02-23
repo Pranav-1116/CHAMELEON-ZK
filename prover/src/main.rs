@@ -13,48 +13,39 @@ use bls12_381_backend::BLS12_381Backend;
 use std::time::Instant;
 
 fn main() {
-    println!("----------------------------------------------------------");
-    println!("              CHAMELEON-ZK PROVER v0.1.0                  ");
+    println!("              CHAMELEON-ZK PROVER                 ");
     println!("     Dynamic Cryptographic Backend Switching System       ");
-    println!("-----------------------------------------------------------");
     println!();
     
     // Display available backends
-    println!("---------------------------------------------------------------");
-    println!(" Available Backends:                                         ");
-    println!("   • {} - {}-bit security (Ethereum-optimized)        ", 
+    println!(" Available Backends:");
+    println!("   • {} - {}-bit security (Ethereum-optimized)", 
              BackendType::BN254.name(), 
              BackendType::BN254.security_bits());
-    println!("   • {} - {}-bit security (Higher security)        ", 
+    println!("   • {} - {}-bit security (Higher security)", 
              BackendType::BLS12_381.name(), 
              BackendType::BLS12_381.security_bits());
     println!("");
     println!();
     
     // Test BN254 Backend
-    println!("----------------------------------------------------");
     println!("  TESTING BACKEND A: BN254");
-    println!("----------------------------------------------------");
     
     let bn254_results = test_backend_bn254();
     
     println!();
     
     // Test BLS12-381 Backend
-    println!("----------------------------------------------------");
     println!("  TESTING BACKEND B: BLS12-381");
-    println!("----------------------------------------------------");
+
     
     let bls_results = test_backend_bls12_381();
     
     println!();
     
     // Summary comparison
-    println!("-------------------------------------------------------------");
     println!("  PERFORMANCE COMPARISON");
-    println!("-------------------------------------------------------------");
     println!();
-    println!("  -------------------------------------------------");
     println!("   Metric          BN254           BLS12-381      ");
     println!("  ");
     println!("  Setup Time      {:>12}ms     {:>12}ms ", 
@@ -67,7 +58,6 @@ fn main() {
              bn254_results.3, bls_results.3);
     println!("   Valid           {:>14}  {:>14} ", 
              bn254_results.4, bls_results.4);
-    println!(" ------------------------------------");
     println!();
     println!("✓ Both backends operational - Ready for morphing!");
 }

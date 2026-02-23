@@ -8,9 +8,7 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-echo "╔═══════════════════════════════════════════════════════════╗"
-echo "║      VERIFIER DIAGNOSTIC TOOL                             ║"
-echo "╚═══════════════════════════════════════════════════════════╝"
+echo "     VERIFIER DIAGNOSTIC TOOL                             "
 echo ""
 
 # Function to analyze a circuit
@@ -20,9 +18,7 @@ analyze_circuit() {
     local contract=$3
     local verifier_file=$4
     
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo -e "${YELLOW}Analyzing: $name${NC}"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     
     echo ""
     echo "1. Public signals in proof:"
@@ -80,6 +76,4 @@ analyze_circuit "Morph Validator" \
     "MorphValidatorVerifier.sol"
 
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "DIAGNOSTIC COMPLETE"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

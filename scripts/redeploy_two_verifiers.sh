@@ -7,9 +7,7 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-echo "╔═══════════════════════════════════════════════════════════╗"
-echo "║      REDEPLOYING SIMPLE & STATE VERIFIERS                 ║"
-echo "╚═══════════════════════════════════════════════════════════╝"
+echo "      REDEPLOYING SIMPLE & STATE VERIFIERS                 "
 echo ""
 
 cd ~/chameleon-zk/contracts
@@ -20,9 +18,7 @@ echo -e "${YELLOW}Wallet balance: $BALANCE ETH${NC}"
 echo ""
 
 # Deploy Simple Verifier
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Deploying Simple Verifier..."
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 SIMPLE_RESULT=$(forge create --rpc-url $SEPOLIA_RPC_URL \
     --private-key $PRIVATE_KEY \
@@ -44,9 +40,7 @@ echo ""
 sleep 5
 
 # Deploy State Commitment Verifier
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Deploying State Commitment Verifier..."
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 STATE_RESULT=$(forge create --rpc-url $SEPOLIA_RPC_URL \
     --private-key $PRIVATE_KEY \
@@ -65,9 +59,7 @@ else
 fi
 
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo -e "${GREEN}DEPLOYMENT COMPLETE${NC}"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "NEW ADDRESSES - Update deployment_addresses.txt with these:"
 echo ""

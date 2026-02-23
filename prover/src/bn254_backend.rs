@@ -20,8 +20,8 @@ pub struct MultiplyCircuit {
 
 impl ConstraintSynthesizer<Fr> for MultiplyCircuit {
     fn generate_constraints(self, cs: ConstraintSystemRef<Fr>) -> Result<(), SynthesisError> {
-        use ark_relations::r1cs::{Variable, LinearCombination};
-        use ark_ff::Field;
+        //use ark_relations::r1cs::{Variable, LinearCombination};
+       // use ark_ff::Field;
         use ark_r1cs_std::prelude::*;
         use ark_r1cs_std::fields::fp::FpVar;
         
@@ -48,7 +48,7 @@ impl ConstraintSynthesizer<Fr> for MultiplyCircuit {
 
 /// BN254 Backend handler
 pub struct BN254Backend {
-    pub proving_key: Option<ProvingKey<Bn254>>,
+    pub proving_key: Option<ProvingKey<Bn254>>,       //HERE THE KEY DOESN'T EXIT UNTIL THE SETUP IS CALLED
     pub verifying_key: Option<VerifyingKey<Bn254>>,
 }
 

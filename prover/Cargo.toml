@@ -2,23 +2,25 @@
 name = "chameleon-prover"
 version = "0.1.0"
 edition = "2021"
+repository = "https://github.com/Pranav-1116/chameleon-zk"
 
 [dependencies]
 # Arkworks core
-ark-ff = "0.4"
-ark-ec = "0.4"
-ark-serialize = "0.4"
-ark-std = "0.4"
-ark-relations = "0.4"
-ark-r1cs-std = "0.4"
+ 
+ark-ff = "0.5"
+ark-ec = "0.5"
+ark-serialize = "0.5"
+ark-std = "0.5"
+ark-relations = "0.5.1"
+ark-r1cs-std = "0.5"
 
 # Proof systems
-ark-groth16 = "0.4"
-ark-snark = "0.4"
+ark-groth16 = "0.5"
+ark-snark = "0.5.1"
 
 # Curves
-ark-bn254 = "0.4"
-ark-bls12-381 = "0.4"
+ark-bn254 = "0.5"
+ark-bls12-381 = "0.5"
 
 # Utilities
 rand = "0.8"
@@ -32,3 +34,17 @@ parallel = ["ark-ff/parallel", "ark-ec/parallel", "ark-groth16/parallel"]
 [profile.release]
 lto = true
 codegen-units = 1
+
+
+
+
+[profile.dev]
+opt-level = 1  # Faster dev builds
+
+[[bin]]
+name = "chameleon-zk"
+path = "src/main.rs"
+
+[[bin]]
+name = "benchmark"
+path = "src/bin/benchmark.rs"
