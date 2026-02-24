@@ -1,17 +1,14 @@
-// BLS12-381 Backend Implementation
-// Full Groth16 proving and verification
-
-use ark_bls12_381::{Bls12_381, Fr, G1Affine, G2Affine};
+use ark_bls12_381::{Bls12_381, Fr};
 use ark_groth16::{Groth16, PreparedVerifyingKey, Proof, ProvingKey, VerifyingKey};
 use ark_relations::r1cs::{ConstraintSynthesizer, ConstraintSystemRef, SynthesisError};
 use ark_snark::SNARK;
-use ark_std::rand::thread_rng;
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
+use rand::rngs::OsRng;
 
 use crate::types::{BackendType, UniversalProof};
 
-/// Simple multiplication circuit for BLS12-381
-/// Proves: a * b = c (where a, b are private, c is public)
+// Simple multiplication circuit for BLS12-381
+// Proves: a * b = c (where a, b are private, c is public)
 #[derive(Clone)]
 pub struct MultiplyCircuitBLS {
     pub a: Option<Fr>,
@@ -44,7 +41,7 @@ impl ConstraintSynthesizer<Fr> for MultiplyCircuitBLS {
     }
 }
 
-/// BLS12-381 Backend handler
+// BLS12-381 Backend handler
 pub struct BLS12_381Backend {
     pub proving_key: Option<ProvingKey<Bls12_381>>,
     pub verifying_key: Option<VerifyingKey<Bls12_381>>,
@@ -58,15 +55,13 @@ impl BLS12_381Backend {
         }
     }
     
-    pub fn backend_type(&self) -> BackendType {
+  /*   pub fn backend_type(&self) -> BackendType {
         BackendType::BLS12_381
     }
-    
-    /// Perform trusted setup for the circuit
+    */
+    // Perform trusted setup for the circuit
     pub fn setup(&mut self) -> Result<(), String> {
-        let mut rng = thread_rng();
-        
-        // Create dummy circuit for setup
+        let mut rng = OsRng;
         let circuit = MultiplyCircuitBLS { a: None, b: None };
         
         // Generate proving and verifying keys
@@ -79,12 +74,10 @@ impl BLS12_381Backend {
         Ok(())
     }
     
-    /// Generate a proof for given inputs
+    // Generate a proof for given inputs
     pub fn prove(&self, a: u64, b: u64) -> Result<UniversalProof, String> {
-        let pk = self.proving_key.as_ref()
-            .ok_or("Setup not performed")?;
-        
-        let mut rng = thread_rng();
+        let pk = self.proving_key.as_ref().ok_or("Setup not performed")?;
+        let mut rng = OsRng;
         
         // Create circuit with actual values
         let circuit = MultiplyCircuitBLS {
@@ -101,7 +94,6 @@ impl BLS12_381Backend {
         proof.serialize_compressed(&mut proof_bytes)
             .map_err(|e| format!("Serialization failed: {:?}", e))?;
         
-        // Calculate public output
         let c = a * b;
         
         Ok(UniversalProof {
@@ -111,16 +103,12 @@ impl BLS12_381Backend {
         })
     }
     
-    /// Verify a proof
     pub fn verify(&self, proof: &UniversalProof) -> Result<bool, String> {
-        let vk = self.verifying_key.as_ref()
-            .ok_or("Setup not performed")?;
+        let vk = self.verifying_key.as_ref().ok_or("Setup not performed")?;
         
-        // Deserialize proof
         let groth_proof: Proof<Bls12_381> = Proof::deserialize_compressed(&proof.proof_bytes[..])
             .map_err(|e| format!("Deserialization failed: {:?}", e))?;
         
-        // Parse public inputs
         let public_input: u64 = proof.public_inputs[0].parse()
             .map_err(|_| "Invalid public input")?;
         let public_inputs = vec![Fr::from(public_input)];
@@ -128,23 +116,10 @@ impl BLS12_381Backend {
         // Prepare verifying key
         let pvk = PreparedVerifyingKey::from(vk.clone());
         
-        // Verify
         let valid = Groth16::<Bls12_381>::verify_with_processed_vk(&pvk, &public_inputs, &groth_proof)
             .map_err(|e| format!("Verification failed: {:?}", e))?;
         
         Ok(valid)
-    }
-    
-    /// Get serialized verifying key
-    pub fn get_verifying_key_bytes(&self) -> Result<Vec<u8>, String> {
-        let vk = self.verifying_key.as_ref()
-            .ok_or("Setup not performed")?;
-        
-        let mut bytes = Vec::new();
-        vk.serialize_compressed(&mut bytes)
-            .map_err(|e| format!("Serialization failed: {:?}", e))?;
-        
-        Ok(bytes)
     }
 }
 
@@ -161,6 +136,6 @@ mod tests {
         assert_eq!(proof.public_inputs[0], "55");
         
         let valid = backend.verify(&proof).expect("Verification should succeed");
-        assert!(valid, "Proof should be valid");
+        assert!(valid);
     }
 }

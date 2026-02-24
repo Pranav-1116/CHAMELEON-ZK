@@ -40,11 +40,3 @@ codegen-units = 1
 
 [profile.dev]
 opt-level = 1  # Faster dev builds
-
-[[bin]]
-name = "chameleon-zk"
-path = "src/main.rs"
-
-[[bin]]
-name = "benchmark"
-path = "src/bin/benchmark.rs"

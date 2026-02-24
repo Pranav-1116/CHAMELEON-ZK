@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 /*
-    Copyright 2021 0KIMS association.
+    Copyright 2026 0KIMS association.
 
     This file is generated with [snarkJS](https://github.com/iden3/snarkjs).
 
@@ -18,7 +18,7 @@
     along with snarkJS. If not, see <https://www.gnu.org/licenses/>.
 */
 
-pragma solidity >=0.7.0 <0.9.0;
+pragma solidity 0.8.20;
 
 contract Groth16Verifier {
     // Scalar field size
