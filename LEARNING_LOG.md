@@ -95,7 +95,7 @@
 - main.rs: Test harness
 
 ### Tests Passing
-- test_bn254_proof_cycle: ✓
+- test_bn254_proof_cycle: 
 
 ### Performance Notes
 - Setup: ~500ms
@@ -134,8 +134,8 @@
 - main.rs: Both backends with benchmarking
 
 ### Tests Passing
-- test_bn254_proof_cycle: ✓
-- test_bls12_381_proof_cycle: ✓
+- test_bn254_proof_cycle: 
+- test_bls12_381_proof_cycle: 
 
 ### Key Insight
 The same circuit logic works on different curves!
@@ -178,9 +178,9 @@ Only the field type changes, everything else is identical.
 - morph_validator: ~500 constraints
 
 ### Tests Passing
-- test_state_creation: ✓
-- test_morph_record_validity: ✓
-- test_invalid_morph_same_backend: ✓
+- test_state_creation: 
+- test_morph_record_validity: 
+- test_invalid_morph_same_backend: 
 
 ### Key Insight
 The commitment is just bytes - it doesn't care what curve
