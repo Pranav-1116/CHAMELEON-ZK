@@ -13,12 +13,14 @@ pub struct MultiplyCircuit {
     pub b: Option<Fr>,
 }
 
-impl ConstraintSynthesizer<Fr> for MultiplyCircuit {
+impl ConstraintSynthesizer<Fr> for MultiplyCircuit {             //Convert itself into the R1CS Constraint
     fn generate_constraints(self, cs: ConstraintSystemRef<Fr>) -> Result<(), SynthesisError> {
         use ark_r1cs_std::prelude::*;
         use ark_r1cs_std::fields::fp::FpVar;
         
-        let a_var = FpVar::new_witness(cs.clone(), || {
+            //Here a and b are the Witness Variables 
+
+        let a_var = FpVar::new_witness(cs.clone(), || { 
             self.a.ok_or(SynthesisError::AssignmentMissing)
         })?;
         
@@ -28,7 +30,7 @@ impl ConstraintSynthesizer<Fr> for MultiplyCircuit {
         
         let c_var = &a_var * &b_var;
         
-        c_var.enforce_equal(&FpVar::new_input(cs.clone(), || {
+        c_var.enforce_equal(&FpVar::new_input(cs.clone(), || {       //Create the Public input
             Ok(self.a.unwrap_or_default() * self.b.unwrap_or_default())
         })?)?;
         
@@ -36,9 +38,11 @@ impl ConstraintSynthesizer<Fr> for MultiplyCircuit {
     }
 }
 
+//Backend Structure
 pub struct BN254Backend {
-    pub proving_key: Option<ProvingKey<Bn254>>,
-    pub verifying_key: Option<VerifyingKey<Bn254>>,
+    pub proving_key: Option<ProvingKey<Bn254>>,     //here the pk is the prover
+    pub verifying_key: Option<VerifyingKey<Bn254>>,   //here the vk is the verifier or verify the proof
+
 }
 
 impl BN254Backend {
@@ -53,9 +57,16 @@ impl BN254Backend {
         let mut rng = OsRng;
         let circuit = MultiplyCircuit { a: None, b: None };
         
-        let (pk, vk) = Groth16::<Bn254>::circuit_specific_setup(circuit, &mut rng)
+        let (pk, vk) = Groth16::<Bn254>::circuit_specific_setup(circuit, &mut rng)      //SetUp Phase 
             .map_err(|e| format!("Setup failed: {:?}", e))?;
         
+    //Step 1: Convert circuitg ->R1CS
+    //Step 2: perform the QAP transformation
+    //Step 3: Generate toxic waste (τ, α, β, γ, δ)
+    //Step 4: Compute:
+               //{ Proving key (Large) 
+               //  Verifying key (Small)}    //this the trusted SetUp
+
         self.proving_key = Some(pk);
         self.verifying_key = Some(vk);
         
@@ -74,10 +85,22 @@ impl BN254Backend {
             b: Some(Fr::from(b)),
         };
         
+        // Generate Proof
+        // Internal Process:
+        // Step 1: Compute withness vector
+        // Step 2: solve QAP polynomial equations
+        // Step 3: Construct proof elements
+
         let proof = Groth16::<Bn254>::prove(pk, circuit, &mut rng)
             .map_err(|e| format!("Proving failed: {:?}", e))?;
         
         // Serialize proof
+/*       Why we are using the Serialize proof ?
+         The Main reason:
+         Proof is elliptic curve points 
+         you convert them into bytes for storage or transmission
+ */
+
         let mut proof_bytes = Vec::new();
         proof.serialize_compressed(&mut proof_bytes)
             .map_err(|e| format!("Serialization failed: {:?}", e))?;
@@ -105,9 +128,9 @@ impl BN254Backend {
         let public_inputs = vec![Fr::from(public_input)];
         
         //parse the public value 
-        let pvk = PreparedVerifyingKey::from(vk.clone());
-        
-//Pre-compute some values for faster verification 
+        let pvk = PreparedVerifyingKey::from(vk.clone());  
+
+        //Pre-compute some values for faster verification 
 
         let valid = Groth16::<Bn254>::verify_with_processed_vk(&pvk, &public_inputs, &groth_proof)
             .map_err(|e| format!("Verification failed: {:?}", e))?;

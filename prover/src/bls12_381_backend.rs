@@ -43,12 +43,12 @@ impl ConstraintSynthesizer<Fr> for MultiplyCircuitBLS {
 
 // BLS12-381 Backend handler
 pub struct BLS12_381Backend {
-    pub proving_key: Option<ProvingKey<Bls12_381>>,
-    pub verifying_key: Option<VerifyingKey<Bls12_381>>,
+    pub proving_key: Option<ProvingKey<Bls12_381>>,  //it stores the pk-prover
+    pub verifying_key: Option<VerifyingKey<Bls12_381>>,//it stores the vk-verifier
 }
 
 impl BLS12_381Backend {
-    pub fn new() -> Self {
+    pub fn new() -> Self {             //intializes backend without keys 
         Self {
             proving_key: None,
             verifying_key: None,
@@ -66,7 +66,7 @@ impl BLS12_381Backend {
         
         // Generate proving and verifying keys
         let (pk, vk) = Groth16::<Bls12_381>::circuit_specific_setup(circuit, &mut rng)
-            .map_err(|e| format!("Setup failed: {:?}", e))?;
+            .map_err(|e| format!("Setup failed: {:?}", e))?;  //Generates toxic waste internally
         
         self.proving_key = Some(pk);
         self.verifying_key = Some(vk);
@@ -83,14 +83,17 @@ impl BLS12_381Backend {
         let circuit = MultiplyCircuitBLS {
             a: Some(Fr::from(a)),
             b: Some(Fr::from(b)),
-        };
+        };  //now the witness values exist
         
         // Generate proof
         let proof = Groth16::<Bls12_381>::prove(pk, circuit, &mut rng)
             .map_err(|e| format!("Proving failed: {:?}", e))?;
         
         // Serialize proof
-        let mut proof_bytes = Vec::new();
+        let mut proof_bytes = Vec::new();                            //here the proof is converting into bytes
+                    //useful for the blockchain submission
+
+
         proof.serialize_compressed(&mut proof_bytes)
             .map_err(|e| format!("Serialization failed: {:?}", e))?;
         
@@ -109,7 +112,7 @@ impl BLS12_381Backend {
         let groth_proof: Proof<Bls12_381> = Proof::deserialize_compressed(&proof.proof_bytes[..])
             .map_err(|e| format!("Deserialization failed: {:?}", e))?;
         
-        let public_input: u64 = proof.public_inputs[0].parse()
+        let public_input: u64 = proof.public_inputs[0].parse()          //Converting String ->Number ->Fr
             .map_err(|_| "Invalid public input")?;
         let public_inputs = vec![Fr::from(public_input)];
         

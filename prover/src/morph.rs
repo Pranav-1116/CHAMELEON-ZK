@@ -1,14 +1,19 @@
-use crate::types::{BackendType, MorphResult, UniversalProof};
+// morph.rs
+#[allow(dead_code)]
+
+use crate::types::{BackendType, MorphResult,UniversalProof};
 use crate::bn254_backend::BN254Backend;
 use crate::bls12_381_backend::BLS12_381Backend;
 use std::time::Instant;
+
+// ... rest of the code
 
 pub struct MorphController {
     current_backend: BackendType,
     bn254: Option<BN254Backend>,
     bls12_381: Option<BLS12_381Backend>,
 }
-
+#[allow(dead_code)]
 impl MorphController {
     pub fn new(initial_backend: BackendType) -> Self {
         Self {
@@ -83,17 +88,60 @@ impl MorphController {
     }
 }
 
+// At the bottom of morph.rs
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
-    fn test_morph() {
+    fn test_morph_controller_new() {
+        let controller = MorphController::new(BackendType::BN254);
+        assert_eq!(controller.current_backend(), BackendType::BN254);
+    }
+
+    #[test]
+    fn test_morph_controller_initialize() {
+        let mut controller = MorphController::new(BackendType::BN254);
+        let result = controller.initialize();
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_morph_bn254_to_bls12_381() {
         let mut controller = MorphController::new(BackendType::BN254);
         controller.initialize().expect("Init should succeed");
         
-        let result = controller.morph(BackendType::BLS12_381).expect("Morph should succeed");
-        assert!(result.success);
+        let result = controller.morph(BackendType::BLS12_381);
+        assert!(result.is_ok());
+        
+        let morph_result = result.unwrap();
+        assert!(morph_result.success);
+        assert_eq!(morph_result.old_backend, BackendType::BN254);
+        assert_eq!(morph_result.new_backend, BackendType::BLS12_381);
+    }
+
+    #[test]
+    fn test_morph_to_same_backend_fails() {
+        let mut controller = MorphController::new(BackendType::BN254);
+        controller.initialize().expect("Init should succeed");
+        
+        let result = controller.morph(BackendType::BN254);
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "Cannot morph to same backend");
+    }
+
+    #[test]
+    fn test_round_trip_morph() {
+        let mut controller = MorphController::new(BackendType::BN254);
+        controller.initialize().expect("Init should succeed");
+        
+        // BN254 -> BLS12-381
+        controller.morph(BackendType::BLS12_381).expect("First morph should succeed");
         assert_eq!(controller.current_backend(), BackendType::BLS12_381);
+        
+        // BLS12-381 -> BN254
+        controller.morph(BackendType::BN254).expect("Second morph should succeed");
+        assert_eq!(controller.current_backend(), BackendType::BN254);
     }
 }

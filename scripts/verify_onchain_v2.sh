@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "     CHAMELEON-ZK ON-CHAIN VERIFICATION V2                "
+echo "     CHAMELEON-ZK ON-CHAIN VERIFICATION               "
 echo ""
 
 source ~/chameleon-zk/.env
@@ -11,6 +11,11 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
+
+if [-z "$SEPOLIA_RPC_URL"];then
+   echo "Error:SEPOLIA_RPC_URL not identified"
+   exit 1
+fi
 
 verify_with_calldata() {
     local name=$1
@@ -26,11 +31,11 @@ verify_with_calldata() {
     echo -e "${YELLOW}  Step 1: Local verification...${NC}"
     LOCAL_RESULT=$(snarkjs groth16 verify verification_key.json public.json proof.json 2>&1)
     if [[ "$LOCAL_RESULT" != *"OK"* ]]; then
-        echo -e "${RED}  ✗ Local verification failed - proof is invalid${NC}"
+        echo -e "${RED}   Local verification failed - proof is invalid${NC}"
         echo "  $LOCAL_RESULT"
         return 1
     fi
-    echo -e "${GREEN}  ✓ Local verification passed${NC}"
+    echo -e "${GREEN}   Local verification passed${NC}"
     
     # Get proof components
     echo -e "${YELLOW}  Step 2: Extracting proof data...${NC}"
@@ -82,16 +87,16 @@ verify_with_calldata() {
     echo "  Result: $RESULT"
     
     if [[ "$RESULT" == "true" ]]; then
-        echo -e "${GREEN}  ✓ ON-CHAIN VERIFICATION PASSED!${NC}"
+        echo -e "${GREEN}   ON-CHAIN VERIFICATION PASSED!${NC}"
         return 0
     elif [[ "$RESULT" == "false" ]]; then
-        echo -e "${RED}  ✗ On-chain verification returned FALSE${NC}"
+        echo -e "${RED}   On-chain verification returned FALSE${NC}"
         echo ""
         echo "  This usually means the verifier contract expects different data."
         echo "  The contract and proof may have been generated with different keys."
         return 1
     else
-        echo -e "${RED}  ✗ Error during verification${NC}"
+        echo -e "${RED}   Error during verification${NC}"
         
         # Try alternative: maybe the contract uses dynamic array
         echo ""
@@ -108,7 +113,7 @@ verify_with_calldata() {
         echo "  Result: $RESULT2"
         
         if [[ "$RESULT2" == "true" ]]; then
-            echo -e "${GREEN}  ✓ ON-CHAIN VERIFICATION PASSED!${NC}"
+            echo -e "${GREEN}   ON-CHAIN VERIFICATION PASSED!${NC}"
             return 0
         fi
         
