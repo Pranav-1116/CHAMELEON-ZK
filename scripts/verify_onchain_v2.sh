@@ -40,23 +40,23 @@ verify_with_calldata() {
     # Get proof components
     echo -e "${YELLOW}  Step 2: Extracting proof data...${NC}"
     
-    A0=$(jq -r '.pi_a[0]' proof.json)
+    A0=$(jq -r '.pi_a[0]' proof.json) # The Swapping doesn't occurs because the A is belongs to Fp and A comes under the G1
     A1=$(jq -r '.pi_a[1]' proof.json)
     
-    # Note: B coordinates are swapped in the circuit format vs contract format
+     # B coordinates are swapped in the circuit format vs contract format
     B00=$(jq -r '.pi_b[0][1]' proof.json)
-    B01=$(jq -r '.pi_b[0][0]' proof.json)
+    B01=$(jq -r '.pi_b[0][0]' proof.json)  # The swapping occurs because the B belongs to the G2
     B10=$(jq -r '.pi_b[1][1]' proof.json)
     B11=$(jq -r '.pi_b[1][0]' proof.json)
     
     C0=$(jq -r '.pi_c[0]' proof.json)
-    C1=$(jq -r '.pi_c[1]' proof.json)
+    C1=$(jq -r '.pi_c[1]' proof.json) # The Swapping doesn't occurs because the C is belongs to Fp  and C comes under the G1
     
     # Get actual public signal count
     ACTUAL_PUB_COUNT=$(jq '. | length' public.json)
     echo "  Public signals count: $ACTUAL_PUB_COUNT"
     
-    # Build public signals array
+    # Build public signals array        
     PUBS=""
     for i in $(seq 0 $((ACTUAL_PUB_COUNT - 1))); do
         VAL=$(jq -r ".[$i]" public.json)
