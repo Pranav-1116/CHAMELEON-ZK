@@ -1,0 +1,29 @@
+{
+    "default_backend": "BN254",
+    "backends": {
+        "BN254": {
+            "enabled": true,
+            "security_bits": 100,
+            "description": "Ethereum-optimized, fastest verification"
+        },
+        "BLS12_381": {
+            "enabled": true,
+            "security_bits": 128,
+            "description": "Higher security, used by Zcash"
+        }
+    },
+    "morph": {
+        "auto_morph_enabled": true,
+        "threat_threshold": 70,
+        "cooldown_seconds": 300
+    },
+    "output": {
+        "proof_directory": "output/proofs",
+        "benchmark_directory": "output/benchmarks",
+        "report_directory": "output/reports"
+    },
+    "benchmark": {
+        "iterations": 5,
+        "warmup_iterations": 1
+    }
+}

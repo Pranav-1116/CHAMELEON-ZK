@@ -5,7 +5,7 @@ pub enum BackendType {
     BN254,
     BLS12_381,
 }
-
+#[allow(dead_code)]
 impl BackendType {
     pub fn name(&self) -> &'static str {
         match self {

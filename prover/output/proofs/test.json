@@ -1,0 +1,11 @@
+{
+    "version": "1.0",
+    "backend": "BN254",
+    "inputs": {
+        "a": 6,
+        "b": 7
+    },
+    "public_output": "42",
+    "proof_size_bytes": 128,
+    "proof_hex": "2dc90c2db4b8b74f1d7b7c871fd9d1aa4e71fcd906925495dc6c29b9799578a32e702a1fb76dddf514f40954f40a3e069c01b53c20e572ea4d46c380efcb7822ab71a822a5b6cfb3e149ef261af1c21aba5ecf604ec6f1a9100730a0fe45e6266e6a622e90bf8bc57adc58b139c5c95ca3372a0143a92e6ac04e47398a025819"
+}
