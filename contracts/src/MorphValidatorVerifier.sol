@@ -1,189 +1,326 @@
-// SPDX-License-Identifier: GPL-3.0
-/*
-    Copyright 2026 0KIMS association.
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
 
-    This file is generated with [snarkJS](https://github.com/iden3/snarkjs).
+import "forge-std/Test.sol";
+import {BN254Verifier, BLS12381Verifier, MorphVerifier} from "../src/Verifier.sol";
+import {StateCommitmentVerifier} from "../src/StateCommitmentVerifier.sol";
 
-    snarkJS is a free software: you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    snarkJS is distributed in the hope that it will be useful, but WITHOUT
-    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-    or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-    License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with snarkJS. If not, see <https://www.gnu.org/licenses/>.
-*/
-
-pragma solidity 0.8.20;
-
-contract Groth16Verifier {
-    // Scalar field size
-    uint256 constant r    = 21888242871839275222246405745257275088548364400416034343698204186575808495617;
-    // Base field size
-    uint256 constant q   = 21888242871839275222246405745257275088696311157297823662689037894645226208583;
-
-    // Verification Key data
-    uint256 constant alphax  = 3050421639393894609694100247362469476301594184194208660243717647327937608084;
-    uint256 constant alphay  = 10570968496776547372902278874938397270085925787545262165721065498216990788862;
-    uint256 constant betax1  = 21691111980123012323298500290421361848112563758657263962991588788225312145784;
-    uint256 constant betax2  = 4216856901912371297629069257509223183173062360485498483168636816601708818350;
-    uint256 constant betay1  = 4563169662782910687268173125798006935932702707712370780282685207883966408839;
-    uint256 constant betay2  = 20270793118337942609509108123032858522765806053947340581216635283059651491912;
-    uint256 constant gammax1 = 11559732032986387107991004021392285783925812861821192530917403151452391805634;
-    uint256 constant gammax2 = 10857046999023057135944570762232829481370756359578518086990519993285655852781;
-    uint256 constant gammay1 = 4082367875863433681332203403145435568316851327593401208105741076214120093531;
-    uint256 constant gammay2 = 8495653923123431417604973247489272438418190587263600148770280649306958101930;
-    uint256 constant deltax1 = 8015758070419226651652001523312074173757953150230852725787698684642522182879;
-    uint256 constant deltax2 = 17280718934443988503302136588059884394573383471380985923379518187472764502850;
-    uint256 constant deltay1 = 17940180404375462993749773111150630102443424426314010844370940044289770093360;
-    uint256 constant deltay2 = 21221829802419819553697275816550557864537352963471280606040202401359281973141;
-
+contract VerifierTest is Test {
     
-    uint256 constant IC0x = 4330896101261327931562894222304268907005630367277661418240976629349999434;
-    uint256 constant IC0y = 19997158488710195389006109539486318001138730795830822891269578160878833292296;
+    BN254Verifier public bn254;
+    BLS12381Verifier public bls12381;
+    MorphVerifier public morph;
+    StateCommitmentVerifier public stateVerifier;
     
-    uint256 constant IC1x = 5884790233945144456835786709185480620191886079201270112598989400779947080097;
-    uint256 constant IC1y = 7753638646293425949442237084470669943195647866179890881666447434852366108174;
+    address public user1 = address(0x1);
+    address public user2 = address(0x2);
     
-    uint256 constant IC2x = 3111468173117182385088039053307551782915738539700109360203239853912727799418;
-    uint256 constant IC2y = 1215203918928959422692924005958635099664657458128909371858839425066204742317;
+    function setUp() public {
+        bn254 = new BN254Verifier();
+        bls12381 = new BLS12381Verifier();
+        morph = new MorphVerifier(address(bn254), address(bls12381));
+        stateVerifier = new StateCommitmentVerifier(address(bn254));
+    }
     
-    uint256 constant IC3x = 2297451708450523864156881426943996729308355969589882314526557016000994226674;
-    uint256 constant IC3y = 3678370412405661836157728963973702620532096259993717115138320768283660304490;
+    // ==================== Deployment Tests ====================
     
-    uint256 constant IC4x = 387256210787584577913315239850335881940610232554516473662530369917182383073;
-    uint256 constant IC4y = 5834205663288724696918314961286589077794243120413574472177033587451436867947;
+    function testBN254Deployed() public view {
+        assertTrue(address(bn254) != address(0), "BN254 not deployed");
+    }
     
- 
-    // Memory data
-    uint16 constant pVk = 0;
-    uint16 constant pPairing = 128;
-
-    uint16 constant pLastMem = 896;
-
-    function verifyProof(uint[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[4] calldata _pubSignals) public view returns (bool) {
-        assembly {
-            function checkField(v) {
-                if iszero(lt(v, r)) {
-                    mstore(0, 0)
-                    return(0, 0x20)
-                }
-            }
-            
-            // G1 function to multiply a G1 value(x,y) to value in an address
-            function g1_mulAccC(pR, x, y, s) {
-                let success
-                let mIn := mload(0x40)
-                mstore(mIn, x)
-                mstore(add(mIn, 32), y)
-                mstore(add(mIn, 64), s)
-
-                success := staticcall(sub(gas(), 2000), 7, mIn, 96, mIn, 64)
-
-                if iszero(success) {
-                    mstore(0, 0)
-                    return(0, 0x20)
-                }
-
-                mstore(add(mIn, 64), mload(pR))
-                mstore(add(mIn, 96), mload(add(pR, 32)))
-
-                success := staticcall(sub(gas(), 2000), 6, mIn, 128, pR, 64)
-
-                if iszero(success) {
-                    mstore(0, 0)
-                    return(0, 0x20)
-                }
-            }
-
-            function checkPairing(pA, pB, pC, pubSignals, pMem) -> isOk {
-                let _pPairing := add(pMem, pPairing)
-                let _pVk := add(pMem, pVk)
-
-                mstore(_pVk, IC0x)
-                mstore(add(_pVk, 32), IC0y)
-
-                // Compute the linear combination vk_x
-                
-                g1_mulAccC(_pVk, IC1x, IC1y, calldataload(add(pubSignals, 0)))
-                
-                g1_mulAccC(_pVk, IC2x, IC2y, calldataload(add(pubSignals, 32)))
-                
-                g1_mulAccC(_pVk, IC3x, IC3y, calldataload(add(pubSignals, 64)))
-                
-                g1_mulAccC(_pVk, IC4x, IC4y, calldataload(add(pubSignals, 96)))
-                
-
-                // -A
-                mstore(_pPairing, calldataload(pA))
-                mstore(add(_pPairing, 32), mod(sub(q, calldataload(add(pA, 32))), q))
-
-                // B
-                mstore(add(_pPairing, 64), calldataload(pB))
-                mstore(add(_pPairing, 96), calldataload(add(pB, 32)))
-                mstore(add(_pPairing, 128), calldataload(add(pB, 64)))
-                mstore(add(_pPairing, 160), calldataload(add(pB, 96)))
-
-                // alpha1
-                mstore(add(_pPairing, 192), alphax)
-                mstore(add(_pPairing, 224), alphay)
-
-                // beta2
-                mstore(add(_pPairing, 256), betax1)
-                mstore(add(_pPairing, 288), betax2)
-                mstore(add(_pPairing, 320), betay1)
-                mstore(add(_pPairing, 352), betay2)
-
-                // vk_x
-                mstore(add(_pPairing, 384), mload(add(pMem, pVk)))
-                mstore(add(_pPairing, 416), mload(add(pMem, add(pVk, 32))))
-
-
-                // gamma2
-                mstore(add(_pPairing, 448), gammax1)
-                mstore(add(_pPairing, 480), gammax2)
-                mstore(add(_pPairing, 512), gammay1)
-                mstore(add(_pPairing, 544), gammay2)
-
-                // C
-                mstore(add(_pPairing, 576), calldataload(pC))
-                mstore(add(_pPairing, 608), calldataload(add(pC, 32)))
-
-                // delta2
-                mstore(add(_pPairing, 640), deltax1)
-                mstore(add(_pPairing, 672), deltax2)
-                mstore(add(_pPairing, 704), deltay1)
-                mstore(add(_pPairing, 736), deltay2)
-
-
-                let success := staticcall(sub(gas(), 2000), 8, _pPairing, 768, _pPairing, 0x20)
-
-                isOk := and(success, mload(_pPairing))
-            }
-
-            let pMem := mload(0x40)
-            mstore(0x40, add(pMem, pLastMem))
-
-            // Validate that all evaluations ∈ F
-            
-            checkField(calldataload(add(_pubSignals, 0)))
-            
-            checkField(calldataload(add(_pubSignals, 32)))
-            
-            checkField(calldataload(add(_pubSignals, 64)))
-            
-            checkField(calldataload(add(_pubSignals, 96)))
-            
-
-            // Validate all evaluations
-            let isValid := checkPairing(_pA, _pB, _pC, _pubSignals, pMem)
-
-            mstore(0, isValid)
-             return(0, 0x20)
-         }
-     }
- }
+    function testBLS12381Deployed() public view {
+        assertTrue(address(bls12381) != address(0), "BLS12381 not deployed");
+    }
+    
+    function testMorphDeployed() public view {
+        assertTrue(address(morph) != address(0), "Morph not deployed");
+    }
+    
+    function testStateVerifierDeployed() public view {
+        assertTrue(address(stateVerifier) != address(0), "StateVerifier not deployed");
+    }
+    
+    // ==================== Morph Tests ====================
+    
+    function testMorphRequest() public {
+        uint256 oldCommit = uint256(keccak256("old"));
+        uint256 newCommit = uint256(keccak256("new"));
+        
+        uint256 morphIndex = morph.requestMorph(0, 1, oldCommit, newCommit);
+        
+        assertEq(morphIndex, 0, "First morph should be index 0");
+    }
+    
+    function testMorphCount() public {
+        uint256 oldCommit = uint256(keccak256("old"));
+        uint256 newCommit = uint256(keccak256("new"));
+        
+        morph.requestMorph(0, 1, oldCommit, newCommit);
+        
+        uint256 count = morph.getMorphCount(address(this));
+        assertEq(count, 1, "Should have 1 morph");
+    }
+    
+    function testCannotMorphToSameBackend() public {
+        uint256 oldCommit = uint256(keccak256("old"));
+        uint256 newCommit = uint256(keccak256("new"));
+        
+        vm.expectRevert("Same backend");
+        morph.requestMorph(0, 0, oldCommit, newCommit);
+    }
+    
+    function testCannotMorphInvalidBackend() public {
+        uint256 oldCommit = uint256(keccak256("old"));
+        uint256 newCommit = uint256(keccak256("new"));
+        
+        vm.expectRevert("Invalid backend");
+        morph.requestMorph(0, 2, oldCommit, newCommit);
+    }
+    
+    function testMultipleMorphRequests() public {
+        uint256 commit1 = uint256(keccak256("state1"));
+        uint256 commit2 = uint256(keccak256("state2"));
+        uint256 commit3 = uint256(keccak256("state3"));
+        
+        uint256 index1 = morph.requestMorph(0, 1, commit1, commit2);
+        uint256 index2 = morph.requestMorph(1, 0, commit2, commit3);
+        
+        assertEq(index1, 0, "First morph index should be 0");
+        assertEq(index2, 1, "Second morph index should be 1");
+        assertEq(morph.getMorphCount(address(this)), 2, "Should have 2 morphs");
+    }
+    
+    // ==================== BLS12-381 Tests ====================
+    
+    function testBLSProofSubmit() public {
+        bytes memory proofData = hex"1234567890";
+        uint256[] memory inputs = new uint256[](1);
+        inputs[0] = 21;
+        
+        bytes32 proofHash = bls12381.submitProof(proofData, inputs);
+        
+        assertTrue(bls12381.isSubmitted(proofHash), "Proof should be submitted");
+        assertFalse(bls12381.isVerified(proofHash), "Proof should not be verified yet");
+    }
+    
+    function testBLSProofVerify() public {
+        bytes memory proofData = hex"abcdef";
+        uint256[] memory inputs = new uint256[](1);
+        inputs[0] = 42;
+        
+        bytes32 proofHash = bls12381.submitProof(proofData, inputs);
+        bls12381.markVerified(proofHash, true);
+        
+        assertTrue(bls12381.isVerified(proofHash), "Proof should be verified");
+    }
+    
+    function testCannotVerifyUnsubmittedProof() public {
+        bytes32 fakeHash = keccak256("fake");
+        
+        vm.expectRevert("Not submitted");
+        bls12381.markVerified(fakeHash, true);
+    }
+    
+    // ==================== Morph with BLS Proof Tests ====================
+    
+    function testMorphWithBLSProof() public {
+        // Request morph
+        uint256 oldCommit = uint256(keccak256("old_state"));
+        uint256 newCommit = uint256(keccak256("new_state"));
+        uint256 morphIndex = morph.requestMorph(0, 1, oldCommit, newCommit);
+        
+        // Submit and verify BLS proof
+        bytes memory proofData = hex"1234";
+        uint256[] memory inputs = new uint256[](1);
+        inputs[0] = 100;
+        bytes32 proofHash = bls12381.submitProof(proofData, inputs);
+        bls12381.markVerified(proofHash, true);
+        
+        // Verify morph with BLS proof
+        bool valid = morph.verifyMorphBLS12381(morphIndex, proofHash);
+        assertTrue(valid, "Morph should be valid");
+    }
+    
+    function testCannotVerifyMorphTwice() public {
+        uint256 oldCommit = uint256(keccak256("old"));
+        uint256 newCommit = uint256(keccak256("new"));
+        uint256 morphIndex = morph.requestMorph(0, 1, oldCommit, newCommit);
+        
+        // Submit and verify BLS proof
+        bytes memory proofData = hex"5678";
+        uint256[] memory inputs = new uint256[](1);
+        inputs[0] = 200;
+        bytes32 proofHash = bls12381.submitProof(proofData, inputs);
+        bls12381.markVerified(proofHash, true);
+        
+        // First verification
+        morph.verifyMorphBLS12381(morphIndex, proofHash);
+        
+        // Second verification should fail
+        vm.expectRevert("Already verified");
+        morph.verifyMorphBLS12381(morphIndex, proofHash);
+    }
+    
+    // ==================== State Commitment Tests ====================
+    
+    function testStateCommitmentSubmit() public {
+        uint256 commitment = uint256(keccak256("test_state"));
+        
+        uint256 index = stateVerifier.submitCommitment(commitment, 0);
+        
+        assertEq(index, 0, "First commitment should be index 0");
+    }
+    
+    function testStateCommitmentCount() public {
+        uint256 commitment = uint256(keccak256("test_state"));
+        
+        stateVerifier.submitCommitment(commitment, 0);
+        
+        uint256 count = stateVerifier.getCommitmentCount(address(this));
+        assertEq(count, 1, "Should have 1 commitment");
+    }
+    
+    function testCannotSubmitDuplicateCommitment() public {
+        uint256 commitment = uint256(keccak256("duplicate"));
+        
+        stateVerifier.submitCommitment(commitment, 0);
+        
+        vm.expectRevert("Commitment exists");
+        stateVerifier.submitCommitment(commitment, 0);
+    }
+    
+    function testCannotSubmitInvalidBackend() public {
+        uint256 commitment = uint256(keccak256("invalid_backend"));
+        
+        vm.expectRevert("Invalid backend");
+        stateVerifier.submitCommitment(commitment, 2);
+    }
+    
+    function testMultipleCommitments() public {
+        uint256 commit1 = uint256(keccak256("state1"));
+        uint256 commit2 = uint256(keccak256("state2"));
+        
+        uint256 index1 = stateVerifier.submitCommitment(commit1, 0);
+        uint256 index2 = stateVerifier.submitCommitment(commit2, 1);
+        
+        assertEq(index1, 0, "First commitment index should be 0");
+        assertEq(index2, 1, "Second commitment index should be 1");
+    }
+    
+    function testGetCommitmentDetails() public {
+        uint256 commitment = uint256(keccak256("detailed_state"));
+        
+        stateVerifier.submitCommitment(commitment, 1);
+        
+        (uint256 storedCommit, uint8 backendId, uint256 timestamp, bool verified) = 
+            stateVerifier.getCommitment(address(this), 0);
+        
+        assertEq(storedCommit, commitment, "Commitment mismatch");
+        assertEq(backendId, 1, "Backend ID mismatch");
+        assertTrue(timestamp > 0, "Timestamp should be set");
+        assertFalse(verified, "Should not be verified yet");
+    }
+    
+    // ==================== Morph Stats Tests ====================
+    
+    function testMorphStats() public {
+        uint256 oldCommit = uint256(keccak256("old"));
+        uint256 newCommit = uint256(keccak256("new"));
+        
+        morph.requestMorph(0, 1, oldCommit, newCommit);
+        morph.requestMorph(1, 0, newCommit, oldCommit);
+        
+        (uint256 total, uint256 successful) = morph.getStats();
+        
+        assertEq(total, 2, "Should have 2 total morphs");
+        assertEq(successful, 0, "Should have 0 successful morphs");
+    }
+    
+    function testMorphStatsAfterVerification() public {
+        uint256 oldCommit = uint256(keccak256("old"));
+        uint256 newCommit = uint256(keccak256("new"));
+        uint256 morphIndex = morph.requestMorph(0, 1, oldCommit, newCommit);
+        
+        // Submit and verify BLS proof
+        bytes memory proofData = hex"9999";
+        uint256[] memory inputs = new uint256[](1);
+        inputs[0] = 999;
+        bytes32 proofHash = bls12381.submitProof(proofData, inputs);
+        bls12381.markVerified(proofHash, true);
+        
+        // Verify morph
+        morph.verifyMorphBLS12381(morphIndex, proofHash);
+        
+        (uint256 total, uint256 successful) = morph.getStats();
+        
+        assertEq(total, 1, "Should have 1 total morph");
+        assertEq(successful, 1, "Should have 1 successful morph");
+    }
+    
+    // ==================== Multi-User Tests ====================
+    
+    function testMultiUserMorphs() public {
+        uint256 commit1 = uint256(keccak256("user1_state"));
+        uint256 commit2 = uint256(keccak256("user2_state"));
+        
+        vm.prank(user1);
+        morph.requestMorph(0, 1, commit1, commit2);
+        
+        vm.prank(user2);
+        morph.requestMorph(1, 0, commit2, commit1);
+        
+        assertEq(morph.getMorphCount(user1), 1, "User1 should have 1 morph");
+        assertEq(morph.getMorphCount(user2), 1, "User2 should have 1 morph");
+    }
+    
+    function testMorphRecordRetrieval() public {
+        uint256 oldCommit = uint256(keccak256("old_record"));
+        uint256 newCommit = uint256(keccak256("new_record"));
+        
+        morph.requestMorph(0, 1, oldCommit, newCommit);
+        
+        (
+            uint8 oldBackend,
+            uint8 newBackend,
+            uint256 storedOldCommit,
+            uint256 storedNewCommit,
+            uint256 timestamp,
+            bool verified
+        ) = morph.getMorphRecord(address(this), 0);
+        
+        assertEq(oldBackend, 0, "Old backend mismatch");
+        assertEq(newBackend, 1, "New backend mismatch");
+        assertEq(storedOldCommit, oldCommit, "Old commitment mismatch");
+        assertEq(storedNewCommit, newCommit, "New commitment mismatch");
+        assertTrue(timestamp > 0, "Timestamp should be set");
+        assertFalse(verified, "Should not be verified");
+    }
+    
+    // ==================== Valid Transition Tests ====================
+    
+    function testValidTransitionTracking() public {
+        uint256 oldCommit = uint256(keccak256("tracking_old"));
+        uint256 newCommit = uint256(keccak256("tracking_new"));
+        uint256 morphIndex = morph.requestMorph(0, 1, oldCommit, newCommit);
+        
+        // Before verification
+        assertFalse(
+            morph.isValidTransition(0, 1, oldCommit, newCommit),
+            "Should not be valid before verification"
+        );
+        
+        // Verify
+        bytes memory proofData = hex"aaaa";
+        uint256[] memory inputs = new uint256[](1);
+        inputs[0] = 111;
+        bytes32 proofHash = bls12381.submitProof(proofData, inputs);
+        bls12381.markVerified(proofHash, true);
+        morph.verifyMorphBLS12381(morphIndex, proofHash);
+        
+        // After verification
+        assertTrue(
+            morph.isValidTransition(0, 1, oldCommit, newCommit),
+            "Should be valid after verification"
+        );
+    }
+}
