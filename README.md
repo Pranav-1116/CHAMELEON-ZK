@@ -38,24 +38,22 @@
 
 **Chameleon-ZK** is a novel zero-knowledge proof system that can dynamically switch between different cryptographic backends at runtime while maintaining proof consistency and state integrity. Unlike traditional ZK systems that are permanently locked into a single set of cryptographic assumptions, Chameleon-ZK adapts to changing threat landscapes, regulatory requirements, and hardware availability.
 
-> **In Simple Terms:** Imagine a car that can switch its engine while driving—from a fuel-efficient engine on highways to a powerful engine on hills—without stopping. Chameleon-ZK does this for cryptography in zero-knowledge proofs.
+**In Simple Terms:** Imagine a car that can switch its engine while driving—from a fuel-efficient engine on highways to a powerful engine on hills—without stopping. Chameleon-ZK does this for cryptography in zero-knowledge proofs.
 
 ---
 
-##  The Problem
+## The Problem
 
 ### Current ZK Systems Are Cryptographically Rigid
 
 Every existing zero-knowledge proof system makes permanent cryptographic choices during the design phase:
 
-+---------------+-------------------------+---------------------------------------------------+
-| System        | Locked Into             | Problem                                           |
-+---------------+-------------------------+---------------------------------------------------+
-| zkSync        | BN254 pairing curve     | Cannot upgrade if BN254 is broken                 |
-| StarkWare     | STARK-friendly hashes   | Cannot switch to different security model         |
-| Scroll        | Keccak-friendly curves  | Tied to specific hash function                    |
-| Polygon zkEVM | BN254 + Keccak          | Double dependency, double risk                    |
-+---------------+-------------------------+---------------------------------------------------+
+| System | Locked Into | Problem |
+|--------|-------------|---------|
+| zkSync | BN254 pairing curve | Cannot upgrade if BN254 is broken |
+| StarkWare | STARK-friendly hashes | Cannot switch to different security model |
+| Scroll | Keccak-friendly curves | Tied to specific hash function |
+| Polygon zkEVM | BN254 + Keccak | Double dependency, double risk |
 
 ### Why This Is Dangerous
 
@@ -82,14 +80,12 @@ RESULT: 18-month migration project, $50M+ cost
 
 ### The Cost of Cryptographic Migration
 
-+------------------------+------------------+---------------+-------------+
-| Migration Type         | Estimated Cost   | Time Required | Risk Level  |
-+------------------------+------------------+---------------+-------------+
-| Hash function change   | $10M - $50M      | 12–24 months  | High        |
-| Curve migration        | $50M - $200M     | 18–36 months  | Critical    |
-| Full crypto overhaul   | $200M - $500M    | 24–48 months  | Existential |
-| Quantum transition     | $1B+ (industry)  | 36–60 months  | Catastrophic|
-+------------------------+------------------+---------------+-------------+
+| Migration Type | Estimated Cost | Time Required | Risk Level |
+|----------------|----------------|---------------|------------|
+| Hash function change | $10M - $50M | 12-24 months | High |
+| Curve migration | $50M - $200M | 18-36 months | Critical |
+| Full crypto overhaul | $200M - $500M | 24-48 months | Existential |
+| Quantum transition | $1B+ (industry) | 36-60 months | Catastrophic |
 
 ---
 
@@ -126,24 +122,17 @@ AFTER (Chameleon-ZK):
 
 ---
 
-##  Key Innovation
+## Key Innovation
 
 ### What Makes Chameleon-ZK Unique
 
-+---------------------------+------------------------------------------------------+------------------------------------------------------------+
-| Innovation                | Description                                          | Why It's Hard                                              |
-+---------------------------+------------------------------------------------------+------------------------------------------------------------+
-| Cross-Curve State         | State remains valid across backend switches          | Different curves have different field sizes                |
-| Consistency               |                                                      |                                                            |
-+---------------------------+------------------------------------------------------+------------------------------------------------------------+
-| Universal Verification    | Single verifier accepts proofs from any backend      | Each curve needs different pairing checks                  |
-+---------------------------+------------------------------------------------------+------------------------------------------------------------+
-| Morphing Proofs           | Cryptographic proof that a morph was valid           | Must prove equivalence across incompatible systems         |
-+---------------------------+------------------------------------------------------+------------------------------------------------------------+
-| Threat-Based Automation   | System decides when to morph                         | Requires real-time threat assessment                       |
-+---------------------------+------------------------------------------------------+------------------------------------------------------------+
-| Zero-Downtime Switching   | Switch backends without stopping service             | Cannot have "maintenance mode" in blockchain               |
-+---------------------------+------------------------------------------------------+------------------------------------------------------------+
+| Innovation | Description | Why It's Hard |
+|------------|-------------|---------------|
+| **Cross-Curve State Consistency** | State remains valid across backend switches | Different curves have different field sizes |
+| **Universal Verification** | Single verifier accepts proofs from any backend | Each curve needs different pairing checks |
+| **Morphing Proofs** | Cryptographic proof that a morph was valid | Must prove equivalence across incompatible systems |
+| **Threat-Based Automation** | System decides when to morph | Requires real-time threat assessment |
+| **Zero-Downtime Switching** | Switch backends without stopping service | Cannot have "maintenance mode" in blockchain |
 
 ### The Core Breakthrough
 
@@ -213,7 +202,7 @@ System fully operational
 │  │  Score = (Quantum × 0.4) + (Regulatory × 0.3) +                  │   │
 │  │          (Geo × 0.2) + (Performance × 0.1)                       │   │
 │  │                                                                  │   │
-│  │  0-25: LOW (BN254)  │  26-50: MEDIUM│ 51-75: HIGH│  76+: CRITICAL│   |
+│  │  0-25: LOW (BN254) │  26-50: MEDIUM │  51-75: HIGH│ 6+: CRITICAL │   |
 │  └──────────────────────────────────────────────────────────────────┘   │
 │                          ▼                                              │
 │  LAYER 3: BACKEND POOL                                                  │
@@ -260,43 +249,37 @@ USER                    CHAMELEON-ZK                    BLOCKCHAIN
 
 ### Core Features
 
-+------------------------+---------------------------------------------------+--------------+
-| Feature                | Description                                       | Status       |
-+------------------------+---------------------------------------------------+--------------+
-| Multi-Backend Support  | BN254 and BLS12-381 elliptic curves               | Implemented  |
-| Dynamic Switching      | Change backends at runtime                        | Implemented  |
-| State Preservation     | Maintain data integrity across morphs             | Implemented  |
-| Universal Verification | Single verifier for all backends                  | Implemented  |
-| Threat Monitoring      | Real-time security assessment                     | In Progress  |
-| Automatic Morphing     | Threat-triggered backend switching                | In Progress  |
-| Post-Quantum Ready     | Lattice-based backend slot                        | Planned      |
-| Regulatory Compliance  | Jurisdiction-aware crypto selection               | Planned      |
-+------------------------+---------------------------------------------------+--------------+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| Multi-Backend Support | BN254 and BLS12-381 elliptic curves |  Implemented |
+| Dynamic Switching | Change backends at runtime |  Implemented |
+| State Preservation | Maintain data integrity across morphs |  Implemented |
+| Universal Verification | Single verifier for all backends |  Implemented |
+| Threat Monitoring | Real-time security assessment |  In Progress |
+| Automatic Morphing | Threat-triggered backend switching |  In Progress |
+| Post-Quantum Ready | Lattice-based backend slot |  Planned |
+| Regulatory Compliance | Jurisdiction-aware crypto selection |  Planned |
 
 ### Backend Comparison
 
-+----------------------+------------+---------------+------------------+
-| Property             | BN254      | BLS12-381     | Lattice (Future) |
-+----------------------+------------+---------------+------------------+
-| Security Level       | 100-bit    | 128-bit       | 256-bit          |
-| Quantum Resistant    | No         | No            | Yes              |
-| Ethereum Precompiles | Yes        | No            | No               |
-| Proof Size           | 192 B      | 288 B         | ~1–2 KB          |
-| Prove Time           | Fast       | Medium        | Slow             |
-| Verify Time          | Very Fast  | Fast          | Medium           |
-| Gas Cost (ETH)       | ~200K      | ~500K         | ~1M+             |
-| Best For             | Normal ops | High security | Quantum threats  |
-+----------------------+------------+---------------+------------------+
+| Property | BN254 | BLS12-381 | Lattice (Future) |
+|----------|-------|-----------|------------------|
+| Security Level | 100-bit | 128-bit | 256-bit |
+| Quantum Resistant |  No |  No |  Yes |
+| Ethereum Precompiles |  Yes |  No |  No |
+| Proof Size | 192 bytes | 288 bytes | ~1-2 KB |
+| Prove Time | Fast | Medium | Slow |
+| Verify Time | Very Fast | Fast | Medium |
+| Gas Cost (ETH) | ~200K | ~500K | ~1M+ |
+| Best For | Normal ops | High security | Quantum threats |
 
 ### Circuit Features
 
-+-------------------+---------------------------+-------------+
-| Circuit           | Purpose                   | Constraints |
-+-------------------+---------------------------+-------------+
-| Simple Multiplier | Basic proof testing       | ~5          |
-| State Commitment  | Create state hash         | ~300–400    |
-| Morph Validator   | Prove valid transition    | ~600–800    |
-+-------------------+---------------------------+-------------+
+| Circuit | Purpose | Constraints |
+|---------|---------|-------------|
+| Simple Multiplier | Basic proof testing | ~5 |
+| State Commitment | Create state hash | ~300-400 |
+| Morph Validator | Prove valid transition | ~600-800 |
 
 ---
 
@@ -304,30 +287,26 @@ USER                    CHAMELEON-ZK                    BLOCKCHAIN
 
 ### Languages & Frameworks
 
-+----------------+-------------+---------+----------------------------------+
-| Component      | Technology  | Version | Purpose                          |
-+----------------+-------------+---------+----------------------------------+
-| Core Prover    | Rust        | 1.70+   | Performance-critical proving     |
-| ZK Library     | Arkworks    | 0.4     | Elliptic curve operations        |
-| Circuits       | Circom      | 2.1.x   | ZK circuit definition            |
-| Proof Gen      | snarkjs     | 0.7+    | Trusted setup, proving           |
-| Contracts      | Solidity    | 0.8.20  | On-chain verification            |
-| Contract Tools | Foundry     | Latest  | Build, test, deploy              |
-| Scripting      | Shell/Python| 3.10+   | Automation                       |
-+----------------+-------------+---------+----------------------------------+
+| Component | Technology | Version | Purpose |
+|-----------|------------|---------|---------|
+| Core Prover | Rust | 1.70+ | Performance-critical proving |
+| ZK Library | Arkworks | 0.4 | Elliptic curve operations |
+| Circuits | Circom | 2.1.x | ZK circuit definition |
+| Proof Gen | snarkjs | 0.7+ | Trusted setup, proving |
+| Contracts | Solidity | 0.8.20 | On-chain verification |
+| Contract Tools | Foundry | Latest | Build, test, deploy |
+| Scripting | Shell/Python | 3.10+ | Automation |
 
 ### Key Dependencies
 
-+------------------+-----------------------------------+
-| Crate/Package    | Purpose                           |
-+------------------+-----------------------------------+
-| ark-bn254        | BN254 curve implementation        |
-| ark-bls12-381    | BLS12-381 curve implementation    |
-| ark-groth16      | Groth16 proof system              |
-| ark-r1cs-std     | R1CS constraint gadgets           |
-| circomlib        | Standard circuit components       |
-| forge-std        | Solidity testing utilities        |
-+------------------+-----------------------------------+
+| Crate/Package | Purpose |
+|---------------|---------|
+| `ark-bn254` | BN254 curve implementation |
+| `ark-bls12-381` | BLS12-381 curve implementation |
+| `ark-groth16` | Groth16 proof system |
+| `ark-r1cs-std` | R1CS constraint gadgets |
+| `circomlib` | Standard circuit components |
+| `forge-std` | Solidity testing utilities |
 
 ---
 
@@ -404,17 +383,15 @@ chameleon-zk/
 
 ### Prerequisites
 
-+-------------------+------------------------+--------------------+
-| Requirement       | Minimum Version        | Check Command      |
-+-------------------+------------------------+--------------------+
-| Operating System  | Linux (Kali / Ubuntu)  | uname -a           |
-| RAM               | 8 GB                   | free -h            |
-| Disk Space        | 40 GB                  | df -h              |
-| Rust              | 1.70+                  | rustc --version    |
-| Node.js           | 20.x                   | node --version     |
-| Circom            | 2.1.x                  | circom --version   |
-| Foundry           | Latest                 | forge --version    |
-+-------------------+------------------------+--------------------+
+| Requirement | Minimum Version | Check Command |
+|-------------|-----------------|---------------|
+| Operating System | Linux (Kali / Ubuntu) | `uname -a` |
+| RAM | 8 GB | `free -h` |
+| Disk Space | 40 GB | `df -h` |
+| Rust | 1.70+ | `rustc --version` |
+| Node.js | 20.x | `node --version` |
+| Circom | 2.1.x | `circom --version` |
+| Foundry | Latest | `forge --version` |
 
 ### Step-by-Step Installation
 
@@ -495,20 +472,19 @@ cd ..
 
 ### Verification
 
-+------------------+---------------------------------------------+-----------------------------+
-| Component        | Command                                     | Expected Output             |
-+------------------+---------------------------------------------+-----------------------------+
-| Rust             | rustc --version                             | rustc 1.7x.x                |
-| Node             | node --version                              | v20.x.x                     |
-| Circom           | circom --version                            | circom compiler 2.1.x       |
-| snarkjs          | snarkjs                                     | Help menu                   |
-| Forge            | forge --version                             | forge 0.2.x                 |
-| Prover builds    | cd prover && cargo build --release          | Finished release            |
-| Contracts build  | cd contracts && forge build                 | Compiler run successful     |
-+------------------+---------------------------------------------+-----------------------------+
+| Component | Command | Expected Output |
+|-----------|---------|-----------------|
+| Rust | `rustc --version` | rustc 1.7x.x |
+| Node | `node --version` | v20.x.x |
+| Circom | `circom --version` | circom compiler 2.1.x |
+| snarkjs | `snarkjs` | Help menu |
+| Forge | `forge --version` | forge 0.2.x |
+| Prover builds | `cd prover && cargo build --release` | Finished release |
+| Contracts build | `cd contracts && forge build` | Compiler run successful |
+
 ---
 
-## Usage
+## 🎮 Usage
 
 ### Running the Prover Demo
 
@@ -520,17 +496,17 @@ cargo run --release
 #### Expected Output
 
 ```
-.......................................................................
+------------------------------------------------------------                                                          
+   CHAMELEON-ZK                                             
+   Zero-Knowledge Proof System v0.1.0                          
+   Dynamic Cryptographic Backend Switching                     
+------------------------------------------------------------                                                            
 
-    CHAMELEON-ZK
-   Zero-Knowledge Proof System v0.1.0
-   Dynamic Cryptographic Backend Switching
-
-.......................................................................
 
 [Chameleon-ZK] Initializing prover...
 
 → Setting up cryptographic backends...
+   ✓ Completed (2.3s)
 
 ============================================================
 TEST 1 — Proof Generation (BN254)
@@ -564,16 +540,16 @@ Generating proof: 5 × 11 = 55
    ✓ Verified (5ms)
    Prove time     : 78ms
 
-------------------------------------------------------------
+────────────────────────────────────────────────────────────
 FINAL STATE
-------------------------------------------------------------
+────────────────────────────────────────────────────────────
 
 Active backend    : BLS12-381
 Total morphs      : 1
 Proofs generated  : 2
 Proofs verified   : 3
 
-Chameleon-ZK demo completed successfully.
+ Chameleon-ZK demo completed successfully.
 ```
 
 ### Compiling Circuits
@@ -659,13 +635,11 @@ Decision Tree:
 
 ### 3. Morphing Process
 
-+------+--------------+----------------------------------------------+
-| Step | Action       | Details                                      |
-+------+--------------+----------------------------------------------+
-| 1    | State Before | Backend: BN254, Balance: 1000, Nonce: 42     |
-| 2    | Morph Proof  | Prove same data, different encoding          |
-| 3    | State After  | Backend: BLS12-381, Balance: 1000, Nonce: 42 |
-+------+--------------+----------------------------------------------+
+| Step | Action | Details |
+|------|--------|---------|
+| 1 | State Before | Backend: BN254, Balance: 1000, Nonce: 42 |
+| 2 | Morph Proof | Prove same data, different encoding |
+| 3 | State After | Backend: BLS12-381, Balance: 1000, Nonce: 42 |
 
 **Security Guarantees:**
 -  Impossible to change balance during morph
@@ -679,54 +653,114 @@ Decision Tree:
 
 ### Proof Generation Performance
 
-+-------------+------------+------------+-------------+------------+
-| Backend     | Setup Time | Prove Time | Verify Time | Proof Size |
-+-------------+------------+------------+-------------+------------+
-| BN254       | ~2.0s      | ~45ms      | ~2ms        | 192 bytes  |
-| BLS12-381   | ~3.5s      | ~78ms      | ~5ms        | 288 bytes  |
-| Difference  | +75%       | +73%       | +150%       | +50%       |
-+-------------+------------+------------+-------------+------------+
+| Backend | Setup Time | Prove Time | Verify Time | Proof Size |
+|---------|------------|------------|-------------|------------|
+| BN254 | ~2.0s | ~45ms | ~2ms | 192 bytes |
+| BLS12-381 | ~3.5s | ~78ms | ~5ms | 288 bytes |
+| **Difference** | +75% | +73% | +150% | +50% |
 
 ### Morphing Performance
 
-+-------------------------+-----------+
-| Metric                  | Value     |
-+-------------------------+-----------+
-| Morph decision time     | < 1ms     |
-| State commitment        | ~10ms     |
-| Morph proof generation  | ~50ms     |
-| On-chain verification   | ~200K gas |
-| Total morph time        | < 100ms   |
-+-------------------------+-----------+
+| Metric | Value |
+|--------|-------|
+| Morph decision time | < 1ms |
+| State commitment | ~10ms |
+| Morph proof generation | ~50ms |
+| On-chain verification | ~200K gas |
+| **Total morph time** | **< 100ms** |
 
 ### Gas Costs (Ethereum)
 
-+---------------------+-----------+-----------+
-| Operation           | BN254     | BLS12-381 |
-+---------------------+-----------+-----------+
-| Proof verification  | ~200K gas | ~500K gas |
-| State commitment    | ~50K gas  | ~50K gas  |
-| Morph execution     | ~300K gas | ~300K gas |
-+---------------------+-----------+-----------+
+| Operation | BN254 | BLS12-381 |
+|-----------|-------|-----------|
+| Proof verification | ~200K gas | ~500K gas |
+| State commitment | ~50K gas | ~50K gas |
+| Morph execution | ~300K gas | ~300K gas |
+
 ### Comparison with Fixed-Backend Systems
 
-+---------------+-------------+----------------+----------------+
-| System        | Can Switch? | Migration Cost | Quantum Ready? |
-+---------------+-------------+----------------+----------------+
-| zkSync        | No          | $50M+          | No             |
-| StarkWare     | No          | $100M+         | Partial        |
-| Polygon zkEVM | No          | $80M+          | No             |
-| Chameleon-ZK  | Yes         | $0             | Yes            |
-+---------------+-------------+----------------+----------------+
+| System | Can Switch? | Migration Cost | Quantum Ready? |
+|--------|-------------|----------------|----------------|
+| zkSync |  No | $50M+ |  No |
+| StarkWare |  No | $100M+ |  Partial |
+| Polygon zkEVM |  No | $80M+ |  No |
+| **Chameleon-ZK** |  Yes | **$0** |  Yes |
+
+---
+
+##  Use Cases
+
+### 1. Quantum Threat Response
+
+| Approach | Timeline | Cost |
+|----------|----------|------|
+| **Traditional System** | 2+ years (panic → design → implement → test → deploy) | $100M+ |
+| **Chameleon-ZK** | 3 minutes (detect → morph → operational) | $0 |
+
+### 2. Regulatory Compliance
+
+**Scenario:** China requires SM2 curve for financial applications
+
+| Approach | Solution | Cost |
+|----------|----------|------|
+| Traditional | Build China-specific version, maintain two codebases | $20M/year |
+| Chameleon-ZK | Add SM2 backend, auto-morph in Chinese jurisdiction | $0 additional |
+
+### 3. Emergency Cryptographic Vulnerability
+
+**Scenario:** Critical vulnerability found in BN254 implementation
+
+| Approach | Downtime | Loss |
+|----------|----------|------|
+| Traditional | Days to weeks | Potentially catastrophic |
+| Chameleon-ZK | 0 seconds | $0, business continues |
+
+---
+
+##  Roadmap
+
+### Phase 1: Foundation (Weeks 1-2) 
+
+- [] Project structure
+- [] BN254 backend
+- [] BLS12-381 backend
+- [] Basic morphing
+- [] Circom circuits
+- [] Solidity verifiers
+
+### Phase 2: Integration (Weeks 3-4) 
+
+- [ ] Testnet deployment
+- [ ] End-to-end testing
+- [ ] Gas optimization
+- [ ] Documentation
+
+### Phase 3: Intelligence (Weeks 5-6) 
+
+- [ ] Quantum threat monitor
+- [ ] Regulatory API integration
+- [ ] Geo-detection system
+- [ ] Automated decision engine
+
+### Phase 4: Production (Weeks 7-8) 
+
+- [ ] Mainnet deployment
+- [ ] Performance benchmarks
+- [ ] Security audit
+- [ ] Public demo
+
+### Future Enhancements
+
+| Feature | Timeline | Description |
+|---------|----------|-------------|
+| Lattice backend | Q2 2025 | Post-quantum cryptography |
+| Multi-party morphing | Q3 2025 | Distributed morph decisions |
+| Cross-chain support | Q4 2025 | Morph across blockchains |
+| AI threat prediction | 2026 | Predictive morphing |
 
 ---
 
 
-
----
-
-
----
 
 ### Contribution Process
 
@@ -741,13 +775,12 @@ Decision Tree:
 ---
 
 ##  License
-
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ```
 MIT License
 
-Copyright (c) 2026   Chameleon-ZK Contributors
+Copyright (c) 2026 Chameleon-ZK Contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -774,13 +807,12 @@ SOFTWARE.
 
 ### Project Maintainer
 
-| Platform  | Contact                                                              |
-
-| GitHub    | @Pranav-1116 — https://github.com/Pranav-1116                        |
-| Email     | pranav.akshay05@gmail.com                                            |
-| Twitter   | @pran40798 — https://x.com/pran40798                                 |
-| LinkedIn  | Akshay Pranav — https://www.linkedin.com/in/akshay-pranav-0a6aa2293/ |
-
+| Platform | Contact |
+|----------|---------|
+| GitHub | [@Pranav-1116](https://github.com/Pranav-1116) |
+| Email | pranav.akshay05@gmail.com |
+| Twitter | [@pran40798](https://x.com/pran40798) |
+| LinkedIn | [Akshay Pranav](https://www.linkedin.com/in/akshay-pranav-0a6aa2293/) |
 
 ---
 
@@ -807,6 +839,3 @@ SOFTWARE.
 ```
 
 ---
-
-
-
