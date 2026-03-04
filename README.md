@@ -774,14 +774,13 @@ SOFTWARE.
 
 ### Project Maintainer
 
-+-----------+----------------------------------------------------------------------+
 | Platform  | Contact                                                              |
-+-----------+----------------------------------------------------------------------+
+
 | GitHub    | @Pranav-1116 — https://github.com/Pranav-1116                        |
 | Email     | pranav.akshay05@gmail.com                                            |
 | Twitter   | @pran40798 — https://x.com/pran40798                                 |
 | LinkedIn  | Akshay Pranav — https://www.linkedin.com/in/akshay-pranav-0a6aa2293/ |
-+-----------+----------------------------------------------------------------------+
+
 
 ---
 
