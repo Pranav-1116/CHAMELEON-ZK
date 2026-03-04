@@ -26,10 +26,3 @@
 - Verifies proofs from any backend
 - Single deployment, multi-backend support
 
-## Data Flow
-
-1. Threat Intel detects change
-2. Decision Engine calculates response
-3. Morphing Circuit validates transition
-4. New backend activates
-5. Universal Verifier accepts new proofs
