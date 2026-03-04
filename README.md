@@ -484,7 +484,7 @@ cd ..
 
 ---
 
-## 🎮 Usage
+##  Usage
 
 ### Running the Prover Demo
 
@@ -587,7 +587,7 @@ forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
 
 ---
 
-## ⚙️ How It Works
+##  How It Works
 
 ### 1. Zero-Knowledge Proof Basics
 
