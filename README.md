@@ -27,7 +27,6 @@
 - [Benchmarks](#benchmarks)
 - [Use Cases](#use-cases)
 - [Roadmap](#roadmap)
-- [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
 - [Acknowledgments](#acknowledgments)
