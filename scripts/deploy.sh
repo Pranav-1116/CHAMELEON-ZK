@@ -1,7 +1,9 @@
+
 #!/bin/bash
 
-echo "    CHAMELEON-ZK SEPOLIA DEPLOYMENT                      "
-echo ""
+echo "-----------------------------------------------------------"
+echo "    CHAMELEON-ZK SEPOLIA DEPLOYMENT                        "
+echo "-----------------------------------------------------------"
 
 # Load environment variables
 source ~/chameleon-zk/.env
@@ -26,40 +28,51 @@ BALANCE=$(cast balance $(cast wallet address --private-key $PRIVATE_KEY) --rpc-u
 echo "Wallet balance: $BALANCE wei"
 echo ""
 
-# Deploy Simple Verifier
-echo "Deploying Simple Verifier..."
-
 cd $CONTRACTS_DIR
 
-SIMPLE_DEPLOY=$(forge create \
+# Step 1: Deploy BN254Verifier
+echo "----------------------------------"
+echo "Deploying BN254Verifier..."
+echo "----------------------------------"
+
+BN254_DEPLOY=$(forge create src/Verifier.sol:BN254Verifier \
     --rpc-url $SEPOLIA_RPC_URL \
     --private-key $PRIVATE_KEY \
-    --broadcast \
-    src/Verifier.sol:Groth16Verifier 2>&1)
+    --broadcast 2>&1)
 
+BN254_ADDRESS=$(echo "$BN254_DEPLOY" | grep "Deployed to:" | awk '{print $3}')
 
-SIMPLE_ADDRESS=$(echo "$SIMPLE_DEPLOY" | grep "Deployed to:" | awk '{print $3}')
-
-if [ -n "$SIMPLE_ADDRESS" ]; then
-    echo -e "${GREEN}Simple Verifier deployed to: $SIMPLE_ADDRESS${NC}"
+if [ -n "$BN254_ADDRESS" ]; then
+    echo -e "${GREEN}BN254Verifier deployed to: $BN254_ADDRESS${NC}"
 else
-    echo -e "${RED}Failed to deploy Simple Verifier${NC}"
-    echo "$SIMPLE_DEPLOY"
+    echo -e "${RED}Failed to deploy BN254Verifier${NC}"
+    echo "$BN254_DEPLOY"
+    exit 1
 fi
 
 echo ""
-sleep 5  # Wait between deployments
+sleep 5
 
-# Deploy State Commitment Verifier
+# Step 2: Deploy State Commitment Verifier
+echo "----------------------------------"
 echo "Deploying State Commitment Verifier..."
+echo "Constructor arg: $BN254_ADDRESS"
+echo "----------------------------------"
 
-STATE_DEPLOY=$(forge create \
-    --rpc-url $SEPOLIA_RPC_URL \
+echo -e "${YELLOW}  Using cast send method (forge create has broadcast issue)...${NC}"
+
+# Get compiled bytecode
+BYTECODE=$(jq -r '.bytecode.object' out/StateCommitmentVerifier.sol/StateCommitmentVerifier.json)
+CONSTRUCTOR_ARGS=$(cast abi-encode "constructor(address)" $BN254_ADDRESS)
+FULL_BYTECODE="${BYTECODE}${CONSTRUCTOR_ARGS:2}"
+
+# Deploy using cast send
+STATE_DEPLOY=$(cast send --rpc-url $SEPOLIA_RPC_URL \
     --private-key $PRIVATE_KEY \
-    --broadcast \
-    src/StateCommitmentVerifier.sol:Groth16Verifier 2>&1)
+    --create $FULL_BYTECODE \
+    --json 2>&1)
 
-STATE_ADDRESS=$(echo "$STATE_DEPLOY" | grep "Deployed to:" | awk '{print $3}')
+STATE_ADDRESS=$(echo "$STATE_DEPLOY" | jq -r '.contractAddress')
 
 if [ -n "$STATE_ADDRESS" ]; then
     echo -e "${GREEN}State Commitment Verifier deployed to: $STATE_ADDRESS${NC}"
@@ -71,14 +84,15 @@ fi
 echo ""
 sleep 5
 
-# Deploy Morph Validator Verifier
+# Step 3: Deploy Morph Validator Verifier
+echo "----------------------------------"
 echo "Deploying Morph Validator Verifier..."
+echo "----------------------------------"
 
-MORPH_DEPLOY=$(forge create \
+MORPH_DEPLOY=$(forge create src/MorphVerifier.sol:Groth16Verifier \
     --rpc-url $SEPOLIA_RPC_URL \
     --private-key $PRIVATE_KEY \
-    --broadcast \
-    src/MorphValidatorVerifier.sol:Groth16Verifier 2>&1)
+    --broadcast 2>&1)
 
 MORPH_ADDRESS=$(echo "$MORPH_DEPLOY" | grep "Deployed to:" | awk '{print $3}')
 
@@ -92,14 +106,15 @@ fi
 echo ""
 sleep 5
 
-# Deploy Universal Verifier
+# Step 4: Deploy Universal Verifier
+echo "----------------------------------"
 echo "Deploying Universal Verifier..."
+echo "----------------------------------"
 
-UNIVERSAL_DEPLOY=$(forge create \
- --rpc-url $SEPOLIA_RPC_URL \
+UNIVERSAL_DEPLOY=$(forge create src/UniversalVerifier.sol:UniversalVerifier \
+    --rpc-url $SEPOLIA_RPC_URL \
     --private-key $PRIVATE_KEY \
-    --broadcast \
-    src/UniversalVerifier.sol:UniversalVerifier 2>&1)
+    --broadcast 2>&1)
 
 UNIVERSAL_ADDRESS=$(echo "$UNIVERSAL_DEPLOY" | grep "Deployed to:" | awk '{print $3}')
 
@@ -113,21 +128,30 @@ fi
 echo ""
 sleep 5
 
-# Deploy Morph Controller
+# Step 5: Deploy Morph Controller
+# Step 5: Deploy Morph Controller
+echo "----------------------------------"
 echo "Deploying Morph Controller..."
+echo "Constructor arg: $UNIVERSAL_ADDRESS"
+echo "----------------------------------"
 
 if [ -n "$UNIVERSAL_ADDRESS" ]; then
-    CONTROLLER_DEPLOY=$(forge create \
-  --rpc-url $SEPOLIA_RPC_URL \
-  --private-key $PRIVATE_KEY \
-  --broadcast \
-  src/MorphController.sol:MorphController \
-  --constructor-args 0x4b025e68748e6BCE8EaaEa92cb8aF47604595D71
-)
+    echo -e "${YELLOW}  Using cast send method...${NC}"
     
-    CONTROLLER_ADDRESS=$(echo "$CONTROLLER_DEPLOY" | grep "Deployed to:" | awk '{print $3}')
+    # Get compiled bytecode
+    BYTECODE=$(jq -r '.bytecode.object' out/MorphController.sol/MorphController.json)
+    CONSTRUCTOR_ARGS=$(cast abi-encode "constructor(address)" $UNIVERSAL_ADDRESS)
+    FULL_BYTECODE="${BYTECODE}${CONSTRUCTOR_ARGS:2}"
     
-    if [ -n "$CONTROLLER_ADDRESS" ]; then
+    # Deploy using cast send
+    CONTROLLER_DEPLOY=$(cast send --rpc-url $SEPOLIA_RPC_URL \
+        --private-key $PRIVATE_KEY \
+        --create $FULL_BYTECODE \
+        --json 2>&1)
+    
+    CONTROLLER_ADDRESS=$(echo "$CONTROLLER_DEPLOY" | jq -r '.contractAddress')
+    
+    if [ -n "$CONTROLLER_ADDRESS" ] && [ "$CONTROLLER_ADDRESS" != "null" ]; then
         echo -e "${GREEN}Morph Controller deployed to: $CONTROLLER_ADDRESS${NC}"
     else
         echo -e "${RED}Failed to deploy Morph Controller${NC}"
@@ -138,23 +162,77 @@ else
 fi
 
 echo ""
-echo "DEPLOYMENT SUMMARY"
+echo "----------------------------------"
+echo -e "${GREEN}DEPLOYMENT SUMMARY${NC}"
+echo "----------------------------------"
 echo ""
-echo "Simple Verifier:      ${SIMPLE_ADDRESS:-NOT DEPLOYED}"
+echo "BN254 Verifier:       ${BN254_ADDRESS:-NOT DEPLOYED}"
 echo "State Verifier:       ${STATE_ADDRESS:-NOT DEPLOYED}"
 echo "Morph Verifier:       ${MORPH_ADDRESS:-NOT DEPLOYED}"
 echo "Universal Verifier:   ${UNIVERSAL_ADDRESS:-NOT DEPLOYED}"
 echo "Morph Controller:     ${CONTROLLER_ADDRESS:-NOT DEPLOYED}"
 echo ""
-echo "Save these addresses to your .env file!"
-echo ""
 
 # Save to a file
-echo "# Deployment Addresses - $(date)" > ~/chameleon-zk/deployment_addresses.txt
-echo "SIMPLE_VERIFIER_ADDRESS=$SIMPLE_ADDRESS" >> ~/chameleon-zk/deployment_addresses.txt
-echo "STATE_VERIFIER_ADDRESS=$STATE_ADDRESS" >> ~/chameleon-zk/deployment_addresses.txt
-echo "MORPH_VERIFIER_ADDRESS=$MORPH_ADDRESS" >> ~/chameleon-zk/deployment_addresses.txt
-echo "UNIVERSAL_VERIFIER_ADDRESS=$UNIVERSAL_ADDRESS" >> ~/chameleon-zk/deployment_addresses.txt
-echo "MORPH_CONTROLLER_ADDRESS=$CONTROLLER_ADDRESS" >> ~/chameleon-zk/deployment_addresses.txt
+cat > ~/chameleon-zk/deployment_addresses.txt << EOF
+# Deployment Addresses - $(date)
+# Network: Sepolia Testnet
 
-echo "Addresses saved to deployment_addresses.txt"
+BN254_VERIFIER_ADDRESS=$BN254_ADDRESS
+STATE_VERIFIER_ADDRESS=$STATE_ADDRESS
+MORPH_VERIFIER_ADDRESS=$MORPH_ADDRESS
+UNIVERSAL_VERIFIER_ADDRESS=$UNIVERSAL_ADDRESS
+MORPH_CONTROLLER_ADDRESS=$CONTROLLER_ADDRESS
+EOF
+
+echo -e "${GREEN}Addresses saved to deployment_addresses.txt${NC}"
+echo ""
+
+# Step 6: Configure Universal Verifier (Register Backends)
+# Step 6: Configure Universal Verifier (Register Verifiers)
+echo "----------------------------------"
+echo -e "${YELLOW}Registering verifiers in Universal Verifier...${NC}"
+echo "----------------------------------"
+
+if [ -n "$UNIVERSAL_ADDRESS" ] && [ -n "$BN254_ADDRESS" ]; then
+    # Register BN254 as State Commitment Verifier (backend 0)
+    echo "Registering BN254 State Commitment Verifier..."
+    STATE_REG=$(cast send $UNIVERSAL_ADDRESS \
+        "setStateCommitmentVerifier(uint8,address)" \
+        0 \
+        $STATE_ADDRESS \
+        --rpc-url $SEPOLIA_RPC_URL \
+        --private-key $PRIVATE_KEY \
+        --json 2>&1)
+    
+    if [[ $STATE_REG == *"transactionHash"* ]]; then
+        echo -e "${GREEN}✓ BN254 State Commitment Verifier registered${NC}"
+    else
+        echo -e "${YELLOW}⚠ State verifier registration may have failed${NC}"
+        echo "$STATE_REG"
+    fi
+    sleep 3
+    
+    # Register BN254 as Morph Validator Verifier (backend 0)
+    echo "Registering BN254 Morph Validator Verifier..."
+    MORPH_REG=$(cast send $UNIVERSAL_ADDRESS \
+        "setMorphValidatorVerifier(uint8,address)" \
+        0 \
+        $MORPH_ADDRESS \
+        --rpc-url $SEPOLIA_RPC_URL \
+        --private-key $PRIVATE_KEY \
+        --json 2>&1)
+    
+    if [[ $MORPH_REG == *"transactionHash"* ]]; then
+        echo -e "${GREEN}✓ BN254 Morph Validator Verifier registered${NC}"
+    else
+        echo -e "${YELLOW}⚠ Morph verifier registration may have failed${NC}"
+        echo "$MORPH_REG"
+    fi
+    sleep 3
+fi
+
+echo ""
+echo "-------------------------------------------------------------"
+echo "           DEPLOYMENT COMPLETE!                              "
+echo "-------------------------------------------------------------"

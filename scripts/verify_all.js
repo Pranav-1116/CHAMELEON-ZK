@@ -1,74 +1,127 @@
+#!/usr/bin/env node
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
-// Contract addresses (update after deployment)
+// Read deployment addresses
+const deploymentFile = path.join(__dirname, '../deployment_addresses.txt');
+const deploymentContent = fs.readFileSync(deploymentFile, 'utf-8');
+
+function extractAddress(content, name) {
+    const regex = new RegExp(`${name}=(.+)`, 'i');
+    const match = content.match(regex);
+    return match ? match[1].trim() : null;
+}
+
 const CONTRACTS = {
-    simple: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-    state: "YOUR_STATE_VERIFIER_ADDRESS",
-    morph: "YOUR_MORPH_VERIFIER_ADDRESS"
+    state: extractAddress(deploymentContent, 'STATE_VERIFIER_ADDRESS'),
+    morph: extractAddress(deploymentContent, 'MORPH_VERIFIER_ADDRESS'),
+    universal: extractAddress(deploymentContent, 'UNIVERSAL_VERIFIER_ADDRESS'),
 };
 
-const RPC = "http://127.0.0.1:8545";
+const RPC = process.env.SEPOLIA_RPC_URL;
 
-function verifyProof(name, contractAddr, proofPath, publicPath, pubCount) {
-    console.log(`\n=== Verifying ${name} ===`);
+console.log("---------------------------------------------------");
+console.log("CHAMELEON-ZK ON-CHAIN VERIFICATION");
+console.log("----------------------------------------------------");
+console.log("");
+console.log("Network: Sepolia Testnet");
+console.log("RPC:", RPC ? RPC.substring(0, 50) + "..." : "NOT SET");
+console.log("");
+console.log("Contracts:");
+console.log("  State Verifier:", CONTRACTS.state);
+console.log("  Morph Verifier:", CONTRACTS.morph);
+console.log("  Universal Verifier:", CONTRACTS.universal);
+console.log("");
+
+function verifyProof(name, contractAddr, proofPath, publicPath) {
+    console.log(`  Verifying: ${name}`);
+    console.log(`  Contract: ${contractAddr}`);
+    console.log(`  Proof: ${path.basename(proofPath)}`);
     
     try {
+        // Check if files exist
+        if (!fs.existsSync(proofPath)) {
+            console.log(`  Proof file not found: ${proofPath}`);
+            return false;
+        }
+        if (!fs.existsSync(publicPath)) {
+            console.log(`  Public file not found: ${publicPath}`);
+            return false;
+        }
+        
         const proof = JSON.parse(fs.readFileSync(proofPath));
         const publicSignals = JSON.parse(fs.readFileSync(publicPath));
         
-        console.log("Public signals:", publicSignals);
+        console.log(`  Public signals: [${publicSignals.join(', ')}]`);
         
-        // Format proof
-        const a = `[${proof.pi_a[0]},${proof.pi_a[1]}]`;
-        const b = `[[${proof.pi_b[0][1]},${proof.pi_b[0][0]}],[${proof.pi_b[1][1]},${proof.pi_b[1][0]}]]`;
-        const c = `[${proof.pi_c[0]},${proof.pi_c[1]}]`;
-        const pub = `[${publicSignals.join(',')}]`;
+        // Generate calldata using snarkjs
+        const calldataCmd = `cd ${path.dirname(publicPath)} && snarkjs zkey export soliditycalldata ${path.basename(publicPath)} ${path.basename(proofPath)}`;
+        const calldata = execSync(calldataCmd, { encoding: 'utf-8' }).trim();
         
-        const sig = `verifyProof(uint256[2],uint256[2][2],uint256[2],uint256[${pubCount}])`;
-        const cmd = `cast call ${contractAddr} "${sig}" "${a}" "${b}" "${c}" "${pub}" --rpc-url ${RPC}`;
+        console.log("  Calling contract...");
+        
+        // Call contract
+        const sig = `verifyProof(uint256[2],uint256[2][2],uint256[2],uint256[])`;
+        const cmd = `cast call ${contractAddr} "${sig}" ${calldata} --rpc-url ${RPC}`;
         
         const result = execSync(cmd, { encoding: 'utf-8' });
         
         if (result.includes("0000000000000000000000000000000000000000000000000000000000000001")) {
-            console.log("✓ PROOF VERIFIED!");
+            console.log("  PROOF VERIFIED ON-CHAIN!");
             return true;
         } else {
-            console.log("✗ Proof invalid");
+            console.log("  Proof verification returned FALSE");
             return false;
         }
     } catch (e) {
-        console.error("Error:", e.message);
+        console.error("  Error:", e.message);
         return false;
     }
 }
 
-// Verify Simple (3 * 7 = 21)
-verifyProof(
-    "Simple Multiplier",
-    CONTRACTS.simple,
-    path.join(__dirname, '../circuits/build/proof.json'),
-    path.join(__dirname, '../circuits/build/public.json'),
-    1
-);
+let passed = 0;
+let failed = 0;
 
 // Verify State Commitment
-verifyProof(
+if (verifyProof(
     "State Commitment",
     CONTRACTS.state,
     path.join(__dirname, '../circuits/build/state_commitment/proof.json'),
-    path.join(__dirname, '../circuits/build/state_commitment/public.json'),
-    2  // backend_id and commitment
-);
+    path.join(__dirname, '../circuits/build/state_commitment/public.json')
+)) {
+    passed++;
+} else {
+    failed++;
+}
+
+console.log("");
 
 // Verify Morph Validator
-verifyProof(
+if (verifyProof(
     "Morph Validator",
     CONTRACTS.morph,
     path.join(__dirname, '../circuits/build/morph_validator/proof.json'),
-    path.join(__dirname, '../circuits/build/morph_validator/public.json'),
-    4  // old_backend, new_backend, old_commitment, new_commitment
-);
+    path.join(__dirname, '../circuits/build/morph_validator/public.json')
+)) {
+    passed++;
+} else {
+    failed++;
+}
 
-console.log("\n=== All verifications complete ===");
+console.log("");
+console.log("  VERIFICATION SUMMARY");
+console.log(`  Passed: ${passed}`);
+console.log(`  Failed: ${failed}`);
+console.log("");
+
+if (failed === 0) {
+    console.log("---------------------------------------------------");
+    console.log("║  ALL PROOFS VERIFIED SUCCESSFULLY ON SEPOLIA!          ║");
+    console.log("---------------------------------------------------");
+} else {
+    console.log(" Some verifications failed. Check errors above.");
+}
+
+process.exit(failed > 0 ? 1 : 0);

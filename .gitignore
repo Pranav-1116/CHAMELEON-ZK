@@ -31,3 +31,5 @@ Thumbs.db
 !.gitkeep
 .env
 deployment_addresses.txt
+package-lock.json
+package.json
