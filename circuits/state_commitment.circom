@@ -21,7 +21,6 @@ include "node_modules/circomlib/circuits/poseidon.circom";
 template StateCommitment() {
     // Private inputs
     signal input balance;
-    signal input value ;
     signal input nonce;
     signal input account_id;
     
