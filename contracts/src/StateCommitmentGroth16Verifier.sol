@@ -54,7 +54,7 @@ contract StateCommitmentGroth16Verifier {
     
  
     // Memory data
-    uint16 constant pVk = 0;
+    uint16 constant P_VK = 0;
     uint16 constant PPAIRING = 128;
 
     uint16 constant PLASTMEM = 896;
@@ -96,16 +96,16 @@ contract StateCommitmentGroth16Verifier {
 
             function checkPairing(pA, pB, pC, pubSignals, pMem) -> isOk {
                 let _PPAIRING := add(pMem, PPAIRING)
-                let _pVk := add(pMem, pVk)
+                let _P_VK := add(pMem, P_VK)
 
-                mstore(_pVk, IC0X)
-                mstore(add(_pVk, 32), IC0Y)
+                mstore(_P_VK, IC0X)
+                mstore(add(_P_VK, 32), IC0Y)
 
                 // Compute the linear combination vk_x
                 
-                g1_mulAccC(_pVk, IC1X, IC1Y, calldataload(add(pubSignals, 0)))
+                g1_mulAccC(_P_VK, IC1X, IC1Y, calldataload(add(pubSignals, 0)))
                 
-                g1_mulAccC(_pVk, IC2X, IC2Y, calldataload(add(pubSignals, 32)))
+                g1_mulAccC(_P_VK, IC2X, IC2Y, calldataload(add(pubSignals, 32)))
                 
 
                 // -A
@@ -129,8 +129,8 @@ contract StateCommitmentGroth16Verifier {
                 mstore(add(_PPAIRING, 352), BETAY2)
 
                 // vk_x
-                mstore(add(_PPAIRING, 384), mload(add(pMem, pVk)))
-                mstore(add(_PPAIRING, 416), mload(add(pMem, add(pVk, 32))))
+                mstore(add(_PPAIRING, 384), mload(add(pMem, P_VK)))
+                mstore(add(_PPAIRING, 416), mload(add(pMem, add(P_VK, 32))))
 
 
                 // gamma2

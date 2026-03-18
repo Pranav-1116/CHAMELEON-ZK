@@ -69,15 +69,20 @@ contract CryptoHealthOracle {
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Not owner");
+       _onlyOwner();
         _;
+    }
+    function _onlyOwner () internal view {
+         require(msg.sender == owner, "Not owner");
     }
 
     modifier onlyReporter() {
-        require(isReporter[msg.sender], "Not authorized reporter");
+       _onlyRepoter();
         _;
     }
-
+ function _onlyRepoter () internal view {
+     require(isReporter[msg.sender], "Not authorized reporter");
+ }
     function addReporter(address _reporter) external onlyOwner {
         require(!isReporter[_reporter], "Already a reporter");
         isReporter[_reporter] = true;
@@ -162,6 +167,8 @@ contract CryptoHealthOracle {
             if (report.score > maxScore) maxScore = report.score;
             reportCount++;
         }
+        // casting to uint8 is safe because score is capped at 100
+        // forge-lint: disable-next-line(unsafe-typecast)
         uint8 avgScore = reportCount > 0 ? uint8(totalScore / reportCount) : 0;
         aggregatedThreats[_category] = AggregatedThreat({
             averageScore: avgScore,
@@ -179,6 +186,8 @@ contract CryptoHealthOracle {
             uint256 weight = categoryWeights[cat];
             weightedSum += catScore * weight;
         }
+        // casting to uint8 is safe because score is bounded to 0–100
+// forge-lint: disable-next-line(unsafe-typecast)
         overallThreatScore = uint8(weightedSum / 100);
         scoreHistory.push(overallThreatScore);
         scoreTimestamps.push(block.timestamp);

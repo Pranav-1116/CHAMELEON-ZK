@@ -30,9 +30,9 @@ contract BN254Verifier {
     uint256 constant IC1X = 15766417984046639306008178178341214666349758951770586385321701896318076289576;
     uint256 constant IC1Y = 20392683127530141134300194747978275271479714075031770559205351470005978195116;
 
-    uint16 constant pVk = 0;
-    uint16 constant pPAIRING = 128;
-    uint16 constant pLASTMEM = 896;
+    uint16 constant P_VK = 0;
+    uint16 constant PPAIRING = 128;
+    uint16 constant PLASTMEM = 896;
 
     function verifyProof(
         uint256[2] calldata _pA,
@@ -74,53 +74,53 @@ contract BN254Verifier {
             }
 
             function checkPairing(pA, pB, pC, pubSignals, pMem) -> isOk {
-                let _pPAIRING := add(pMem, pPAIRING)
-                let _pVk := add(pMem, pVk)
+                let _PPAIRING := add(pMem, PPAIRING)
+                let _P_VK := add(pMem, P_VK)
 
-                mstore(_pVk, IC0X)
-                mstore(add(_pVk, 32), IC0Y)
+                mstore(_P_VK, IC0X)
+                mstore(add(_P_VK, 32), IC0Y)
 
-                g1_mulAccC(_pVk, IC1X, IC1Y, calldataload(add(pubSignals, 0)))
+                g1_mulAccC(_P_VK, IC1X, IC1Y, calldataload(add(pubSignals, 0)))
 
-                mstore(_pPAIRING, calldataload(pA))
-                mstore(add(_pPAIRING, 32), mod(sub(q, calldataload(add(pA, 32))), q))
+                mstore(_PPAIRING, calldataload(pA))
+                mstore(add(_PPAIRING, 32), mod(sub(q, calldataload(add(pA, 32))), q))
 
-                mstore(add(_pPAIRING, 64), calldataload(pB))
-                mstore(add(_pPAIRING, 96), calldataload(add(pB, 32)))
-                mstore(add(_pPAIRING, 128), calldataload(add(pB, 64)))
-                mstore(add(_pPAIRING, 160), calldataload(add(pB, 96)))
+                mstore(add(_PPAIRING, 64), calldataload(pB))
+                mstore(add(_PPAIRING, 96), calldataload(add(pB, 32)))
+                mstore(add(_PPAIRING, 128), calldataload(add(pB, 64)))
+                mstore(add(_PPAIRING, 160), calldataload(add(pB, 96)))
 
-                mstore(add(_pPAIRING, 192), ALPHAX)
-                mstore(add(_pPAIRING, 224), ALPHAY)
+                mstore(add(_PPAIRING, 192), ALPHAX)
+                mstore(add(_PPAIRING, 224), ALPHAY)
 
-                mstore(add(_pPAIRING, 256), BETAX1)
-                mstore(add(_pPAIRING, 288), BETAX2)
-                mstore(add(_pPAIRING, 320), BETAY1)
-                mstore(add(_pPAIRING, 352), BETAY2)
+                mstore(add(_PPAIRING, 256), BETAX1)
+                mstore(add(_PPAIRING, 288), BETAX2)
+                mstore(add(_PPAIRING, 320), BETAY1)
+                mstore(add(_PPAIRING, 352), BETAY2)
 
-                mstore(add(_pPAIRING, 384), mload(add(pMem, pVk)))
-                mstore(add(_pPAIRING, 416), mload(add(pMem, add(pVk, 32))))
+                mstore(add(_PPAIRING, 384), mload(add(pMem, P_VK)))
+                mstore(add(_PPAIRING, 416), mload(add(pMem, add(P_VK, 32))))
 
-                mstore(add(_pPAIRING, 448), GAMMAX1)
-                mstore(add(_pPAIRING, 480), GAMMAX2)
-                mstore(add(_pPAIRING, 512), GAMMAY1)
-                mstore(add(_pPAIRING, 544), GAMMAY2)
+                mstore(add(_PPAIRING, 448), GAMMAX1)
+                mstore(add(_PPAIRING, 480), GAMMAX2)
+                mstore(add(_PPAIRING, 512), GAMMAY1)
+                mstore(add(_PPAIRING, 544), GAMMAY2)
 
-                mstore(add(_pPAIRING, 576), calldataload(pC))
-                mstore(add(_pPAIRING, 608), calldataload(add(pC, 32)))
+                mstore(add(_PPAIRING, 576), calldataload(pC))
+                mstore(add(_PPAIRING, 608), calldataload(add(pC, 32)))
 
-                mstore(add(_pPAIRING, 640), DELTAX1)
-                mstore(add(_pPAIRING, 672), DELTAX2)
-                mstore(add(_pPAIRING, 704), DELTAY1)
-                mstore(add(_pPAIRING, 736), DELTAY2)
+                mstore(add(_PPAIRING, 640), DELTAX1)
+                mstore(add(_PPAIRING, 672), DELTAX2)
+                mstore(add(_PPAIRING, 704), DELTAY1)
+                mstore(add(_PPAIRING, 736), DELTAY2)
 
-                let success := staticcall(sub(gas(), 2000), 8, _pPAIRING, 768, _pPAIRING, 0x20)
+                let success := staticcall(sub(gas(), 2000), 8, _PPAIRING, 768, _PPAIRING, 0x20)
 
-                isOk := and(success, mload(_pPAIRING))
+                isOk := and(success, mload(_PPAIRING))
             }
 
             let pMem := mload(0x40)
-            mstore(0x40, add(pMem, pLASTMEM))
+            mstore(0x40, add(pMem, PLASTMEM))
 
             checkField(calldataload(add(_pubSignals, 0)))
 
@@ -149,7 +149,7 @@ contract BLS12381Verifier {
         bytes calldata proofData,
         uint256[] calldata publicInputs
     ) external returns (bytes32) {
-        bytes32 proofHash = keccak256(abi.encodePacked(proofData, publicInputs));
+        bytes32 proofHash = keccak256(abi.encode(proofData, publicInputs));
         submittedProofs[proofHash] = true;
         emit ProofSubmitted(msg.sender, proofHash);
         return proofHash;
@@ -190,8 +190,11 @@ contract UniversalVerifier {
     event ProofVerified(Backend indexed backend, address indexed sender, bool valid);
     
     modifier onlyOwner() {
-        require(msg.sender == owner, "Not owner");
+        _onlyOwner();
         _;
+    }
+    function _onlyOwner() internal view  {
+        require(msg.sender ==owner ,"Not Owner");
     }
     
     constructor() {
@@ -319,8 +322,8 @@ contract MorphVerifier {
         if (valid) {
             record.verified = true;
             successfulMorphs++;
-            
-            bytes32 transitionHash = keccak256(abi.encodePacked(
+            // forge-lint: disable-next-line(asm-keccak256)
+            bytes32 transitionHash = keccak256(abi.encode(
                 record.oldBackend,
                 record.newBackend,
                 record.oldCommitment,
@@ -347,8 +350,8 @@ contract MorphVerifier {
         if (valid) {
             record.verified = true;
             successfulMorphs++;
-            
-            bytes32 transitionHash = keccak256(abi.encodePacked(
+            // forge-lint: disable-next-line(asm-keccak256)
+            bytes32 transitionHash = keccak256(abi.encode(
                 record.oldBackend,
                 record.newBackend,
                 record.oldCommitment,
@@ -392,7 +395,8 @@ contract MorphVerifier {
         uint256 oldCommitment,
         uint256 newCommitment
     ) external view returns (bool) {
-        bytes32 transitionHash = keccak256(abi.encodePacked(
+        // forge-lint: disable-next-line(asm-keccak256)
+        bytes32 transitionHash = keccak256(abi.encode(
             oldBackend,
             newBackend,
             oldCommitment,

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 import {BN254Verifier, BLS12381Verifier, MorphVerifier} from "../src/Verifier.sol";
 import {StateCommitmentVerifier} from "../src/StateCommitmentVerifier.sol";
 

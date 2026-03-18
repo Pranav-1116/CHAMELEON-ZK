@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 import {BN254Verifier, BLS12381Verifier, MorphVerifier} from "../src/Verifier.sol";
 import {StateCommitmentVerifier} from "../src/StateCommitmentVerifier.sol";
 
@@ -115,6 +115,7 @@ contract VerifierTest is Test {
     }
     
     function testCannotVerifyUnsubmittedProof() public {
+        // forge-lint: disable-next-line(asm-keccak256)
         bytes32 fakeHash = keccak256("fake");
         
         vm.expectRevert("Not submitted");
