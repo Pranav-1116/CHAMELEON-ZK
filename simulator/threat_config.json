@@ -1,0 +1,19 @@
+{
+  "morph_threshold": 50,
+  "recovery_threshold": 20,
+  "check_interval_seconds": 5,
+  "total_cycles": 20,
+  "weights": {
+    "quantum": 0.4,
+    "regulatory": 0.3,
+    "geographic": 0.2,
+    "performance": 0.1
+  },
+  "backends": {
+    "default": "BN254",
+    "default_id": 0,
+    "upgrade": "BLS12-381",
+    "upgrade_id": 1
+  },
+  "threat_pattern": "rising_falling"
+}
