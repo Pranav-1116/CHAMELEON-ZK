@@ -1,0 +1,46 @@
+
+[19:29:18] ============================================
+[19:29:18] AUTO-MORPH STARTED: BN254 --> BLS12-381
+[19:29:18] ============================================
+[19:29:18] Step 1/7: State commitment proof...
+[19:29:21]   VALID (1092ms)
+[19:29:21] Step 2/7: Morph validity proof...
+[19:29:25]   VALID (1520ms)
+[19:29:25] Step 3/7: Rust morph to BLS12-381...
+[19:29:25]       Finished `release` profile [optimized] target(s) in 0.14s
+[19:29:25]        Running `target/release/chameleon-prover morph --to bls12-381`
+[19:29:25]                       MORPHING BACKEND
+[19:29:25]   Switching to: BLS12-381
+[19:29:25]   Security:     128-bit
+[19:29:25]   Optimization: Higher security applications
+[19:29:25]   
+[19:29:25]   Backend switched successfully!
+[19:29:25] Step 4/7: Proof on BLS12-381...
+[19:29:26]       Finished `release` profile [optimized] target(s) in 0.09s
+[19:29:26]        Running `target/release/chameleon-prover prove --backend bls12-381`
+[19:29:26]                       GENERATING PROOF
+[19:29:26]   Backend: bls12-381
+[19:29:26]   Inputs:  3 x 7
+[19:29:26]   
+[19:29:26]   [1/4] Running setup...
+[19:29:26]   [2/4] Generating proof...
+[19:29:26]   [3/4] Verifying proof...
+[19:29:26]   [4/4] Saving proof...
+[19:29:26]   
+[19:29:26]   SUCCESS!
+[19:29:26]     Result:     3 x 7 = 21
+[19:29:26]     Proof size: 192 bytes
+[19:29:26]     Verified:   YES
+[19:29:26]     Time:       182.931476ms
+[19:29:26]     Saved to:   proof.json
+[19:29:26]   BLS12-381 proof: 696ms
+[19:29:26] Step 5/7: On-chain threat level...
+[19:29:42]   Updated to level 2
+[19:29:42] Step 6/7: On-chain backend switch...
+[19:29:53]   Backend switched on-chain
+[19:29:53] Step 7/7: Post-morph verification...
+[19:29:55]   Post-morph: VALID
+
+[19:29:55] ============================================
+[19:29:55] AUTO-MORPH COMPLETE (3308ms)
+[19:29:55] ============================================

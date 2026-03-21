@@ -1,0 +1,11 @@
+{
+    "version": "1.0",
+    "backend": "BLS12-381",
+    "inputs": {
+        "a": 3,
+        "b": 7
+    },
+    "public_output": "21",
+    "proof_size_bytes": 192,
+    "proof_hex": "848fb7c9241e188c83111a6337c0c04bc85fa838167439068085e4609bbb5d27377924f40de7abeb7f12249d801ac6c18abc4b62f2dd839901958a427a1a066803d8c5540a25cfcff2cd55a03fde59265e79407a4c90d4eead26976add57aa99184dfaf55cfead9ca448c149469c73c196440e8a8c027d782ddaee2716bd6e9ca892351691a637e0ca78b78ce27f72beb8f97bb9d7785eec012c9e42690d30f1fdb3c017e7c0895cbad4380f8d393028aa14b16f12a25ce5cfd771bd48a4f992"
+}
