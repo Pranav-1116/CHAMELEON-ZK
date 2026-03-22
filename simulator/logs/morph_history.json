@@ -1,12 +1,12 @@
 [
   {
-    "time": "19:29:55",
+    "time": "21:56:56",
     "direction": "FORWARD",
     "from": "BN254",
     "to": "BLS12-381",
-    "state_proof_ms": 1092,
-    "morph_proof_ms": 1520,
-    "bls_proof_ms": 696,
-    "total_ms": 3308
+    "state_proof_ms": 1279,
+    "morph_proof_ms": 894,
+    "bls_proof_ms": 346,
+    "total_ms": 2519
   }
 ]
