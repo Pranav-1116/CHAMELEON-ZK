@@ -8,5 +8,13 @@
     "morph_proof_ms": 894,
     "bls_proof_ms": 346,
     "total_ms": 2519
+  },
+  {
+    "time": "10:15:04",
+    "direction": "BACK",
+    "from": "BLS12-381",
+    "to": "BN254",
+    "state_proof_ms": 16351,
+    "bn254_proof_ms": 5364
   }
 ]

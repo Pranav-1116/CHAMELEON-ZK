@@ -44,3 +44,42 @@
 [21:56:56] ============================================
 [21:56:56] AUTO-MORPH COMPLETE (2519ms)
 [21:56:56] ============================================
+
+[10:13:04] ============================================
+[10:13:04] MORPH-BACK: BLS12-381 --> BN254
+[10:13:04] ============================================
+[10:13:04] Step 1/5: State commitment proof...
+[10:13:34]   VALID (16351ms)
+[10:13:35] Step 2/5: Rust morph to BN254...
+[10:13:52]       Finished `release` profile [optimized] target(s) in 12.71s
+[10:13:52]        Running `target/release/chameleon-prover morph --to bn254`
+[10:13:52]                       MORPHING BACKEND
+[10:13:53]   Switching to: BN254
+[10:13:53]   Security:     100-bit
+[10:13:53]   Optimization: Ethereum precompiles
+[10:13:53]   
+[10:13:53]   Backend switched successfully!
+[10:13:53] Step 3/5: Proof on BN254...
+[10:13:54]       Finished `release` profile [optimized] target(s) in 0.73s
+[10:13:55]        Running `target/release/chameleon-prover prove --backend bn254`
+[10:13:55]                       GENERATING PROOF
+[10:13:55]   Backend: bn254
+[10:13:55]   Inputs:  3 x 7
+[10:13:56]   
+[10:13:56]   [1/4] Running setup...
+[10:13:57]   [2/4] Generating proof...
+[10:13:57]   [3/4] Verifying proof...
+[10:13:57]   [4/4] Saving proof...
+[10:13:57]   
+[10:13:57]   SUCCESS!
+[10:13:57]     Result:     3 x 7 = 21
+[10:13:58]     Proof size: 128 bytes
+[10:13:58]     Verified:   YES
+[10:13:58]     Time:       2.499561131s
+[10:13:58]     Saved to:   proof.json
+[10:13:59] Step 4/5: On-chain reset...
+[10:14:52]   On-chain reset done
+[10:14:52] Step 5/5: Post-recovery verification...
+[10:15:03]   Post-recovery: VALID
+
+[10:15:03] MORPH-BACK COMPLETE — BN254 restored
