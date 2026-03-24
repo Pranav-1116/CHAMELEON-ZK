@@ -8,7 +8,7 @@ optimizer_runs = 200
 via_ir = false
 
 [rpc_endpoints]
-sepolia = "${SEPOLIA_RpC_URL}"
+sepolia = "${SEPOLIA_RPC_URL}"
 
 [etherscan]
-sepolia = { key = "${ETHERSCAN_APi_KEY}" }
+sepolia = { key = "${ETHERSCAN_API_KEY}" }
