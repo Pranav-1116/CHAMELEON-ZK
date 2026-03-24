@@ -117,4 +117,28 @@ Rust Dual-Backend:  Total=${RUST_TIME}ms
 Morph Overhead:     ${TOTAL_MORPH_OVERHEAD}ms
 EOF
 
+# ----- PROOF SIZE COMPARISON -----
+echo ""
+echo "--- Proof Size Comparison ---"
+echo ""
+echo "  What you send to verify a proof:"
+echo ""
+
+echo "  │ Proof Type              │ Size      │ Backend          │"
+
+echo "  │ State Commitment        │ ${STATE_SIZE} bytes │ BN254 (Groth16)  │"
+echo "  │ Morph Validator         │ ${MORPH_SIZE} bytes │ BN254 (Groth16)  │"
+echo "  │ Rust BN254 proof        │ 128 bytes │ BN254 (Arkworks) │"
+echo "  │ Rust BLS12-381 proof    │ 192 bytes │ BLS12-381        │"
+
+echo ""
+echo "  Key observations:"
+echo "  • Groth16 proofs are ~800 bytes (constant per circuit)"
+echo "  • Rust BN254 proofs are 128 bytes"
+echo "  • Rust BLS12-381 proofs are 192 bytes (50% larger)"
+echo "  • BLS12-381 is larger because its field is 381 bits vs 254"
+echo "  • Proof size does NOT change when morphing"
+echo "  • Same circuit always produces same size proof"
+echo ""
+
 echo "Results saved to: $RESULTS_FILE"

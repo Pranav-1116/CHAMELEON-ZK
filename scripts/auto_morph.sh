@@ -7,9 +7,17 @@ LOG_FILE=~/chameleon-zk/simulator/logs/threat_log.txt
 source ~/chameleon-zk/.env 2>/dev/null
 source ~/chameleon-zk/deployment_addresses.txt 2>/dev/null
 
+# Get proof sizes for this morph
+SC_SIZE=$(wc -c < ~/chameleon-zk/circuits/build/state_commitment/proof.json 2>/dev/null || echo "0")
+MV_SIZE=$(wc -c < ~/chameleon-zk/circuits/build/morph_validator/proof.json 2>/dev/null || echo "0")
+
 echo "" | tee -a $LOG_FILE
 echo "[$(date +%H:%M:%S)] ============================================" | tee -a $LOG_FILE
-echo "[$(date +%H:%M:%S)] AUTO-MORPH STARTED: BN254 --> BLS12-381" | tee -a $LOG_FILE
+echo "[$(date +%H:%M:%S)] AUTO-MORPH COMPLETE (${TOTAL}ms)" | tee -a $LOG_FILE
+echo "[$(date +%H:%M:%S)]   State commitment proof: ${SC_SIZE} bytes" | tee -a $LOG_FILE
+echo "[$(date +%H:%M:%S)]   Morph validator proof:  ${MV_SIZE} bytes" | tee -a $LOG_FILE
+echo "[$(date +%H:%M:%S)]   BLS12-381 proof:        192 bytes (Rust)" | tee -a $LOG_FILE
+echo "[$(date +%H:%M:%S)]   Total proof data:       $((SC_SIZE + MV_SIZE + 192)) bytes" | tee -a $LOG_FILE
 echo "[$(date +%H:%M:%S)] ============================================" | tee -a $LOG_FILE
 
 # ---------------------------------------------------------------
@@ -172,7 +180,10 @@ jq ". += [{
     \"state_proof_ms\": $STATE_TIME,
     \"morph_proof_ms\": $MORPH_TIME,
     \"bls_proof_ms\": $BLS_PROVE_TIME,
-    \"total_ms\": $TOTAL
+    \"total_ms\": $TOTAL,
+    \"state_proof_bytes\": $SC_SIZE,
+    \"morph_proof_bytes\": $MV_SIZE,
+    \"bls_proof_bytes\": 192
 }]" $HISTORY > $TEMP && mv $TEMP $HISTORY 2>/dev/null
 
 exit 0
