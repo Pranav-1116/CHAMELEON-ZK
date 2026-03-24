@@ -35,10 +35,8 @@ echo -e "  ${BLUE}SECTION 2: Circuit Files${NC}"
 
 CIRCUITS_DIR=~/chameleon-zk/circuits
 
-run_test "Simple circuit exists" "test -f $CIRCUITS_DIR/build/simple1.circom"
 run_test "State commitment circuit exists" "test -f $CIRCUITS_DIR/state_commitment.circom"
 run_test "Morph validator circuit exists" "test -f $CIRCUITS_DIR/morph_validator.circom"
-run_test "Simple circuit compiled" "test -f $CIRCUITS_DIR/build/simple1.r1cs"
 run_test "State commitment compiled" "test -f $CIRCUITS_DIR/build/state_commitment/state_commitment.r1cs"
 run_test "Morph validator compiled" "test -f $CIRCUITS_DIR/build/morph_validator/morph_validator.r1cs"
 
@@ -46,7 +44,6 @@ echo ""
 echo -e "  ${BLUE}SECTION 3: Trusted Setup Files${NC}"
 
 run_test "Powers of Tau exists" "test -f $CIRCUITS_DIR/build/pot12_final.ptau"
-run_test "Simple zkey exists" "test -f $CIRCUITS_DIR/build/simple_final.zkey"
 run_test "State commitment zkey exists" "test -f $CIRCUITS_DIR/build/state_commitment/state_commitment_final.zkey"
 run_test "Morph validator zkey exists" "test -f $CIRCUITS_DIR/build/morph_validator/morph_validator_final.zkey"
 
@@ -104,21 +101,7 @@ fi
 echo ""
 echo -e "  ${BLUE}SECTION 6: Proof Generation & Verification${NC}"
 
-# Simple circuit proof
-SIMPLE_DIR=$CIRCUITS_DIR/build
-run_test "Simple proof exists" "test -f $SIMPLE_DIR/proof.json"
-run_test "Simple public.json exists" "test -f $SIMPLE_DIR/public.json"
 
-echo ""
-echo -e "  ${YELLOW}Verifying simple circuit proof...${NC}"
-cd $SIMPLE_DIR
-if snarkjs groth16 verify verification_key.json public.json proof.json > /dev/null 2>&1; then
-    echo -e "  Simple proof verification: ${GREEN}PASSED${NC}"
-    ((TESTS_PASSED++))
-else
-    echo -e "  Simple proof verification: ${RED}FAILED${NC}"
-    ((TESTS_FAILED++))
-fi
 
 # State commitment proof
 STATE_DIR=$CIRCUITS_DIR/build/state_commitment

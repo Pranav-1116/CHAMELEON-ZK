@@ -1,20 +1,20 @@
 [
   {
-    "time": "21:56:56",
+    "time": "11:23:47",
     "direction": "FORWARD",
     "from": "BN254",
     "to": "BLS12-381",
-    "state_proof_ms": 1279,
-    "morph_proof_ms": 894,
-    "bls_proof_ms": 346,
-    "total_ms": 2519
+    "state_proof_ms": 1111,
+    "morph_proof_ms": 843,
+    "bls_proof_ms": 280,
+    "total_ms": 2234
   },
   {
-    "time": "10:15:04",
+    "time": "11:25:16",
     "direction": "BACK",
     "from": "BLS12-381",
     "to": "BN254",
-    "state_proof_ms": 16351,
-    "bn254_proof_ms": 5364
+    "state_proof_ms": 741,
+    "bn254_proof_ms": 300
   }
 ]

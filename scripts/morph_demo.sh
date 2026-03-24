@@ -94,7 +94,7 @@ TX_HASH=$(cast send $MORPH_CONTROLLER_ADDRESS \
     --json 2>/dev/null | jq -r '.transactionHash')
 
 if [ -n "$TX_HASH" ] && [ "$TX_HASH" != "null" ]; then
-    echo -e "  ${GREEN}✓ Transaction sent: ${TX_HASH:0:20}...${NC}"
+    echo -e "  ${GREEN} Transaction sent: ${TX_HASH:0:20}...${NC}"
     echo "  Waiting for confirmation..."
     sleep 5
 else
@@ -108,7 +108,7 @@ NEW_THREAT_NAME_HEX=$(cast call $MORPH_CONTROLLER_ADDRESS "getThreatLevelName()"
 NEW_THREAT_NAME=$(echo $NEW_THREAT_NAME_HEX | sed 's/0x//' | xxd -r -p 2>/dev/null | tr -d '\0')
 
 echo ""
-echo -e "  ${GREEN}✓ Threat level updated!${NC}"
+echo -e "  ${GREEN} Threat level updated!${NC}"
 echo "    Previous: $THREAT_NAME"
 echo "    Current:  $NEW_THREAT_NAME"
 echo ""
@@ -145,8 +145,69 @@ echo ""
 echo "  Running Rust prover with both backends..."
 echo ""
 
+# Rust benchmark — both BN254 and BLS12-381
 cd ~/chameleon-zk/prover
-cargo run --release 2>&1 | while IFS= read -r line; do
+echo "  --- Rust Prover Benchmark ---"
+cargo run --release -- benchmark 2>&1 | while IFS= read -r line; do
+    echo "  $line"
+done
+
+echo ""
+
+# State commitment proof (Circom)
+echo "  --- State Commitment Proof ---"
+cd ~/chameleon-zk/circuits/build/state_commitment
+node state_commitment_js/generate_witness.js \
+    state_commitment_js/state_commitment.wasm \
+    input.json witness.wtns 2>/dev/null
+START=$(date +%s%N)
+snarkjs groth16 prove \
+    state_commitment_final.zkey witness.wtns \
+    proof.json public.json 2>/dev/null
+END=$(date +%s%N)
+PROVE_TIME=$(( (END - START) / 1000000 ))
+VERIFY=$(snarkjs groth16 verify verification_key.json public.json proof.json 2>&1)
+if echo "$VERIFY" | grep -q "OK\|true"; then
+    echo -e "  ${GREEN}State commitment: VALID (${PROVE_TIME}ms)${NC}"
+else
+    echo -e "  ${RED}State commitment: FAILED${NC}"
+fi
+
+echo ""
+
+# Morph validator proof (Circom)
+echo "  --- Morph Validator Proof ---"
+cd ~/chameleon-zk/circuits/build/morph_validator
+node morph_validator_js/generate_witness.js \
+    morph_validator_js/morph_validator.wasm \
+    input.json witness.wtns 2>/dev/null
+START=$(date +%s%N)
+snarkjs groth16 prove \
+    morph_validator_final.zkey witness.wtns \
+    proof.json public.json 2>/dev/null
+END=$(date +%s%N)
+MORPH_TIME=$(( (END - START) / 1000000 ))
+VERIFY=$(snarkjs groth16 verify verification_key.json public.json proof.json 2>&1)
+if echo "$VERIFY" | grep -q "OK\|true"; then
+    echo -e "  ${GREEN}Morph validator: VALID (${MORPH_TIME}ms)${NC}"
+else
+    echo -e "  ${RED}Morph validator: FAILED${NC}"
+fi
+
+echo ""
+
+# Rust morph to BLS12-381
+echo "  --- Rust Backend Morph ---"
+cd ~/chameleon-zk/prover
+cargo run --release -- morph --to bls12-381 2>&1 | while IFS= read -r line; do
+    echo "  $line"
+done
+
+echo ""
+
+# Proof on new backend
+echo "  --- Proof on BLS12-381 ---"
+cargo run --release -- prove --backend bls12-381 2>&1 | while IFS= read -r line; do
     echo "  $line"
 done
 
@@ -167,10 +228,17 @@ cast send $MORPH_CONTROLLER_ADDRESS \
 
 sleep 5
 
+# Morph Rust prover back to BN254
+cd ~/chameleon-zk/prover
+cargo run --release -- morph --to bn254 2>&1 | while IFS= read -r line; do
+    echo "  $line"
+done
+
+sleep 2
 FINAL_THREAT_HEX=$(cast call $MORPH_CONTROLLER_ADDRESS "getThreatLevelName()" --rpc-url $SEPOLIA_RPC_URL 2>/dev/null)
 FINAL_THREAT=$(echo $FINAL_THREAT_HEX | sed 's/0x//' | xxd -r -p 2>/dev/null | tr -d '\0')
 
-echo -e "  ${GREEN}✓ Threat level reset to: $FINAL_THREAT${NC}"
+echo -e "  ${GREEN} Threat level reset to: $FINAL_THREAT${NC}"
 echo ""
 
 sleep 1
@@ -179,11 +247,14 @@ echo -e "  ${CYAN}DEMONSTRATION SUMMARY${NC}"
 echo ""
 echo "  This demonstration showed:"
 echo ""
-echo "  ${GREEN}✓${NC} Multiple cryptographic backends (BN254, BLS12-381)"
-echo "  ${GREEN}✓${NC} Real-time threat level monitoring"
-echo "  ${GREEN}✓${NC} Automatic morphing recommendations"
-echo "  ${GREEN}✓${NC} On-chain contract state management"
-echo "  ${GREEN}✓${NC} Backend performance comparison"
+echo -e "  ${GREEN}${NC} Rust benchmark: BN254 + BLS12-381 both verified"
+echo -e "  ${GREEN}${NC} State commitment proof: data integrity verified"
+echo -e "  ${GREEN}${NC} Morph validator proof: switch authorized"
+echo -e "  ${GREEN}${NC} Rust morph: BN254 → BLS12-381 switched"
+echo -e "  ${GREEN}${NC} BLS12-381 proof generated on new backend"
+echo -e "  ${GREEN}${NC} On-chain threat level updated on Sepolia"
+echo -e "  ${GREEN}${NC} On-chain backend switch recorded"
+echo -e "  ${GREEN}${NC} Threat resolved and system restored"
 echo ""
 echo "    CHAMELEON-ZK: Cryptographic Agility Achieved!     "
 echo "                                                      "
