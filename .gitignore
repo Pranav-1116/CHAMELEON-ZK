@@ -1,5 +1,6 @@
 # Build outputs
 circuits/build/
+circuits/node_modules
 contracts/out/
 contracts/cache/
 prover/target/
@@ -29,7 +30,8 @@ Thumbs.db
 
 # Keep structure
 !.gitkeep
-.env
+
+# Keep necessary files
 deployment_addresses.txt
 package-lock.json
 package.json
