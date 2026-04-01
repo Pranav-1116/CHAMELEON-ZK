@@ -41,9 +41,9 @@ analyze_circuit() {
     echo "3. Local verification:"
     VERIFY_RESULT=$(snarkjs groth16 verify verification_key.json public.json proof.json 2>&1)
     if [[ "$VERIFY_RESULT" == *"OK"* ]]; then
-        echo -e "   ${GREEN}✓ Local verification PASSED${NC}"
+        echo -e "   ${GREEN} Local verification PASSED${NC}"
     else
-        echo -e "   ${RED}✗ Local verification FAILED${NC}"
+        echo -e "   ${RED} Local verification FAILED${NC}"
         echo "   $VERIFY_RESULT"
     fi
     
@@ -51,19 +51,15 @@ analyze_circuit() {
     echo "4. Contract deployed at: $contract"
     CODE=$(cast code $contract --rpc-url $SEPOLIA_RPC_URL 2>/dev/null)
     if [ ${#CODE} -gt 10 ]; then
-        echo -e "   ${GREEN}✓ Contract exists${NC}"
+        echo -e "   ${GREEN} Contract exists${NC}"
     else
-        echo -e "   ${RED}✗ No code at address${NC}"
+        echo -e "   ${RED} No code at address${NC}"
     fi
     
     echo ""
 }
 
-# Analyze each circuit
-analyze_circuit "Simple Multiplier" \
-    ~/chameleon-zk/circuits/build \
-    $SIMPLE_VERIFIER_ADDRESS \
-    "Verifier.sol"
+
 
 analyze_circuit "State Commitment" \
     ~/chameleon-zk/circuits/build/state_commitment \
