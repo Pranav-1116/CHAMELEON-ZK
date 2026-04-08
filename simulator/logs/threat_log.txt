@@ -1,110 +1,110 @@
-Simulation started at Wed Apr  8 09:37:53 AM IST 2026
-[09:37:53] Cycle=1 Q=10 R=6 G=4 Score=8 Level=LOW Backend=BN254
-[09:37:58] Cycle=2 Q=20 R=12 G=8 Score=15 Level=LOW Backend=BN254
-[09:38:03] Cycle=3 Q=30 R=18 G=12 Score=21 Level=LOW Backend=BN254
-[09:38:09] Cycle=4 Q=40 R=24 G=16 Score=28 Level=MEDIUM Backend=BN254
-[09:38:14] Cycle=5 Q=50 R=30 G=20 Score=35 Level=MEDIUM Backend=BN254
-[09:38:19] Cycle=6 Q=60 R=36 G=24 Score=41 Level=MEDIUM Backend=BN254
-[09:38:24] Cycle=7 Q=70 R=42 G=28 Score=48 Level=MEDIUM Backend=BN254
-[09:38:29] Cycle=8 Q=80 R=48 G=32 Score=54 Level=HIGH Backend=BN254
+Simulation started at Wed Apr  8 10:37:07 AM IST 2026
+[10:37:07] Cycle=1 Q=10 R=6 G=4 Score=8 Level=LOW Backend=BN254
+[10:37:12] Cycle=2 Q=20 R=12 G=8 Score=15 Level=LOW Backend=BN254
+[10:37:17] Cycle=3 Q=30 R=18 G=12 Score=21 Level=LOW Backend=BN254
+[10:37:22] Cycle=4 Q=40 R=24 G=16 Score=28 Level=MEDIUM Backend=BN254
+[10:37:27] Cycle=5 Q=50 R=30 G=20 Score=35 Level=MEDIUM Backend=BN254
+[10:37:32] Cycle=6 Q=60 R=36 G=24 Score=41 Level=MEDIUM Backend=BN254
+[10:37:37] Cycle=7 Q=70 R=42 G=28 Score=48 Level=MEDIUM Backend=BN254
+[10:37:42] Cycle=8 Q=80 R=48 G=32 Score=54 Level=HIGH Backend=BN254
 
-[09:38:29] ============================================
-[09:38:29] AUTO-MORPH COMPLETE (ms)
-[09:38:29]   State commitment proof: 806 bytes
-[09:38:29]   Morph validator proof:  805 bytes
-[09:38:29]   BLS12-381 proof:        192 bytes (Rust)
-[09:38:29]   Total proof data:       1803 bytes
-[09:38:29] ============================================
-[09:38:29] Step 1/7: State commitment proof...
-[09:38:30]   VALID (651ms)
-[09:38:30] Step 2/7: Morph validity proof...
-[09:38:31]   VALID (692ms)
-[09:38:31] Step 3/7: Rust morph to BLS12-381...
-[09:38:32]       Finished `release` profile [optimized] target(s) in 0.05s
-[09:38:32]        Running `target/release/chameleon-prover morph --to bls12-381`
-[09:38:32]                       MORPHING BACKEND
-[09:38:32]   Switching to: BLS12-381
-[09:38:32]   Security:     128-bit
-[09:38:32]   Optimization: Higher security applications
-[09:38:32]   
-[09:38:32]   Backend switched successfully!
-[09:38:32] Step 4/7: Proof on BLS12-381...
-[09:38:32]       Finished `release` profile [optimized] target(s) in 0.05s
-[09:38:32]        Running `target/release/chameleon-prover prove --backend bls12-381`
-[09:38:32]                       GENERATING PROOF
-[09:38:32]   Backend: bls12-381
-[09:38:32]   Inputs:  3 x 7
-[09:38:32]   
-[09:38:32]   [1/4] Running setup...
-[09:38:32]   [2/4] Generating proof...
-[09:38:32]   [3/4] Verifying proof...
-[09:38:32]   [4/4] Saving proof...
-[09:38:32]   
-[09:38:32]   SUCCESS!
-[09:38:32]     Result:     3 x 7 = 21
-[09:38:32]     Proof size: 192 bytes
-[09:38:32]     Verified:   YES
-[09:38:32]     Time:       93.863021ms
-[09:38:32]     Saved to:   proof.json
-[09:38:32]   BLS12-381 proof: 292ms
-[09:38:32] Step 5/7: On-chain threat level...
-[09:38:47]   Updated to level 2
-[09:38:47] Step 6/7: On-chain backend switch...
-[09:38:52]   Backend switched on-chain
-[09:38:52] Step 7/7: Post-morph verification...
-[09:38:54]   Post-morph: VALID
+[10:37:42] ============================================
+[10:37:42] AUTO-MORPH COMPLETE (ms)
+[10:37:42]   State commitment proof: 802 bytes
+[10:37:42]   Morph validator proof:  803 bytes
+[10:37:42]   BLS12-381 proof:        192 bytes (Rust)
+[10:37:42]   Total proof data:       1797 bytes
+[10:37:43] ============================================
+[10:37:43] Step 1/7: State commitment proof...
+[10:37:44]   VALID (566ms)
+[10:37:44] Step 2/7: Morph validity proof...
+[10:37:45]   VALID (619ms)
+[10:37:45] Step 3/7: Rust morph to BLS12-381...
+[10:37:45]       Finished `release` profile [optimized] target(s) in 0.05s
+[10:37:45]        Running `target/release/chameleon-prover morph --to bls12-381`
+[10:37:45]                       MORPHING BACKEND
+[10:37:45]   Switching to: BLS12-381
+[10:37:45]   Security:     128-bit
+[10:37:45]   Optimization: Higher security applications
+[10:37:45]   
+[10:37:45]   Backend switched successfully!
+[10:37:45] Step 4/7: Proof on BLS12-381...
+[10:37:45]       Finished `release` profile [optimized] target(s) in 0.07s
+[10:37:45]        Running `target/release/chameleon-prover prove --backend bls12-381`
+[10:37:45]                       GENERATING PROOF
+[10:37:45]   Backend: bls12-381
+[10:37:45]   Inputs:  3 x 7
+[10:37:45]   
+[10:37:45]   [1/4] Running setup...
+[10:37:45]   [2/4] Generating proof...
+[10:37:45]   [3/4] Verifying proof...
+[10:37:45]   [4/4] Saving proof...
+[10:37:45]   
+[10:37:45]   SUCCESS!
+[10:37:45]     Result:     3 x 7 = 21
+[10:37:45]     Proof size: 192 bytes
+[10:37:45]     Verified:   YES
+[10:37:45]     Time:       94.573599ms
+[10:37:45]     Saved to:   proof.json
+[10:37:45]   BLS12-381 proof: 318ms
+[10:37:45] Step 5/7: On-chain threat level...
+[10:38:01]   Updated to level 2
+[10:38:01] Step 6/7: On-chain backend switch...
+[10:38:16]   Backend switched on-chain
+[10:38:16] Step 7/7: Post-morph verification...
+[10:38:18]   Post-morph: VALID
 
-[09:38:54] ============================================
-[09:38:54] AUTO-MORPH COMPLETE (1635ms)
-[09:38:54] ============================================
-[09:38:59] Cycle=9 Q=90 R=54 G=36 Score=61 Level=HIGH Backend=BLS12-381
-[09:39:04] Cycle=10 Q=100 R=60 G=40 Score=68 Level=HIGH Backend=BLS12-381
-[09:39:09] Cycle=11 Q=90 R=54 G=36 Score=61 Level=HIGH Backend=BLS12-381
-[09:39:14] Cycle=12 Q=80 R=48 G=32 Score=54 Level=HIGH Backend=BLS12-381
-[09:39:19] Cycle=13 Q=70 R=42 G=28 Score=48 Level=MEDIUM Backend=BLS12-381
-[09:39:24] Cycle=14 Q=60 R=36 G=24 Score=41 Level=MEDIUM Backend=BLS12-381
-[09:39:29] Cycle=15 Q=50 R=30 G=20 Score=35 Level=MEDIUM Backend=BLS12-381
-[09:39:34] Cycle=16 Q=40 R=24 G=16 Score=28 Level=MEDIUM Backend=BLS12-381
-[09:39:39] Cycle=17 Q=30 R=18 G=12 Score=21 Level=LOW Backend=BLS12-381
-[09:39:44] Cycle=18 Q=20 R=12 G=8 Score=15 Level=LOW Backend=BLS12-381
+[10:38:18] ============================================
+[10:38:18] AUTO-MORPH COMPLETE (1503ms)
+[10:38:18] ============================================
+[10:38:23] Cycle=9 Q=90 R=54 G=36 Score=61 Level=HIGH Backend=BLS12-381
+[10:38:28] Cycle=10 Q=100 R=60 G=40 Score=68 Level=HIGH Backend=BLS12-381
+[10:38:33] Cycle=11 Q=90 R=54 G=36 Score=61 Level=HIGH Backend=BLS12-381
+[10:38:38] Cycle=12 Q=80 R=48 G=32 Score=54 Level=HIGH Backend=BLS12-381
+[10:38:43] Cycle=13 Q=70 R=42 G=28 Score=48 Level=MEDIUM Backend=BLS12-381
+[10:38:48] Cycle=14 Q=60 R=36 G=24 Score=41 Level=MEDIUM Backend=BLS12-381
+[10:38:53] Cycle=15 Q=50 R=30 G=20 Score=35 Level=MEDIUM Backend=BLS12-381
+[10:38:58] Cycle=16 Q=40 R=24 G=16 Score=28 Level=MEDIUM Backend=BLS12-381
+[10:39:03] Cycle=17 Q=30 R=18 G=12 Score=21 Level=LOW Backend=BLS12-381
+[10:39:08] Cycle=18 Q=20 R=12 G=8 Score=15 Level=LOW Backend=BLS12-381
 
-[09:39:44] ============================================
-[09:39:44] MORPH-BACK: BLS12-381 --> BN254
-[09:39:44] ============================================
-[09:39:44] Step 1/5: State commitment proof...
-[09:39:45]   VALID (566ms)
-[09:39:45] Step 2/5: Rust morph to BN254...
-[09:39:45]       Finished `release` profile [optimized] target(s) in 0.06s
-[09:39:45]        Running `target/release/chameleon-prover morph --to bn254`
-[09:39:45]                       MORPHING BACKEND
-[09:39:45]   Switching to: BN254
-[09:39:45]   Security:     100-bit
-[09:39:45]   Optimization: Ethereum precompiles
-[09:39:45]   
-[09:39:45]   Backend switched successfully!
-[09:39:45] Step 3/5: Proof on BN254...
-[09:39:45]       Finished `release` profile [optimized] target(s) in 0.05s
-[09:39:45]        Running `target/release/chameleon-prover prove --backend bn254`
-[09:39:45]                       GENERATING PROOF
-[09:39:45]   Backend: bn254
-[09:39:45]   Inputs:  3 x 7
-[09:39:45]   
-[09:39:45]   [1/4] Running setup...
-[09:39:45]   [2/4] Generating proof...
-[09:39:45]   [3/4] Verifying proof...
-[09:39:45]   [4/4] Saving proof...
-[09:39:45]   
-[09:39:45]   SUCCESS!
-[09:39:45]     Result:     3 x 7 = 21
-[09:39:45]     Proof size: 128 bytes
-[09:39:45]     Verified:   YES
-[09:39:45]     Time:       76.510568ms
-[09:39:45]     Saved to:   proof.json
-[09:39:45] Step 4/5: On-chain reset...
-[09:40:04]   On-chain reset done
-[09:40:04] Step 5/5: Post-recovery verification...
-[09:40:06]   Post-recovery: VALID
+[10:39:08] ============================================
+[10:39:08] MORPH-BACK: BLS12-381 --> BN254
+[10:39:08] ============================================
+[10:39:08] Step 1/5: State commitment proof...
+[10:39:12]   VALID (1819ms)
+[10:39:12] Step 2/5: Rust morph to BN254...
+[10:39:12]       Finished `release` profile [optimized] target(s) in 0.23s
+[10:39:12]        Running `target/release/chameleon-prover morph --to bn254`
+[10:39:12]                       MORPHING BACKEND
+[10:39:12]   Switching to: BN254
+[10:39:12]   Security:     100-bit
+[10:39:12]   Optimization: Ethereum precompiles
+[10:39:12]   
+[10:39:12]   Backend switched successfully!
+[10:39:12] Step 3/5: Proof on BN254...
+[10:39:13]       Finished `release` profile [optimized] target(s) in 0.26s
+[10:39:13]        Running `target/release/chameleon-prover prove --backend bn254`
+[10:39:13]                       GENERATING PROOF
+[10:39:13]   Backend: bn254
+[10:39:13]   Inputs:  3 x 7
+[10:39:13]   
+[10:39:13]   [1/4] Running setup...
+[10:39:13]   [2/4] Generating proof...
+[10:39:13]   [3/4] Verifying proof...
+[10:39:13]   [4/4] Saving proof...
+[10:39:13]   
+[10:39:13]   SUCCESS!
+[10:39:13]     Result:     3 x 7 = 21
+[10:39:13]     Proof size: 128 bytes
+[10:39:13]     Verified:   YES
+[10:39:13]     Time:       130.776664ms
+[10:39:13]     Saved to:   proof.json
+[10:39:13] Step 4/5: On-chain reset...
+[10:39:32]   On-chain reset done
+[10:39:32] Step 5/5: Post-recovery verification...
+[10:39:36]   Post-recovery: VALID
 
-[09:40:06] MORPH-BACK COMPLETE — BN254 restored
-[09:40:11] Cycle=19 Q=10 R=6 G=4 Score=8 Level=LOW Backend=BN254
-[09:40:16] Cycle=20 Q=0 R=0 G=0 Score=2 Level=LOW Backend=BN254
+[10:39:36] MORPH-BACK COMPLETE — BN254 restored
+[10:39:41] Cycle=19 Q=10 R=6 G=4 Score=8 Level=LOW Backend=BN254
+[10:39:46] Cycle=20 Q=0 R=0 G=0 Score=2 Level=LOW Backend=BN254

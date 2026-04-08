@@ -175,7 +175,7 @@ contract BLS12381Verifier {
  * @title UniversalVerifier
  * @dev Routes proofs to correct backend verifier
  */
-contract UniversalVerifier {
+contract LegacyUniversalVerifier {
     
     enum Backend { BN254, BLS12_381 }
     

@@ -4,7 +4,7 @@ circuits/node_modules
 contracts/out/
 contracts/cache/
 prover/target/
-
+backups
 # Secrets
 .env
 *.key

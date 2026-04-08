@@ -1,0 +1,8 @@
+Benchmark started at Wed Apr  8 10:37:02 AM IST 2026
+
+RESULTS
+-------
+State Commitment:   Prove=573ms  Verify=446ms  Size=802bytes
+Morph Validator:    Prove=656ms  Verify=401ms  Size=803bytes
+Rust Dual-Backend:  Total=242ms
+Morph Overhead:     1229ms
