@@ -6,7 +6,6 @@ pragma solidity ^0.8.20;
  * @notice On-chain registry mapping jurisdictions to approved cryptographic curves
  */
 contract RegulatoryRegistry {
-
     struct JurisdictionConfig {
         string name;
         string regionCode;
@@ -49,18 +48,17 @@ contract RegulatoryRegistry {
     }
 
     modifier onlyOwner() {
-       _onlyOwner();
+        _onlyOwner();
         _;
     }
-function _onlyOwner() internal view {
-     require(msg.sender == owner, "Not owner");
-}
-    function _registerCurve(
-        uint8 _backendId,
-        string memory _name,
-        string memory _standardRef,
-        uint8 _securityLevel
-    ) internal {
+
+    function _onlyOwner() internal view {
+        require(msg.sender == owner, "Not owner");
+    }
+
+    function _registerCurve(uint8 _backendId, string memory _name, string memory _standardRef, uint8 _securityLevel)
+        internal
+    {
         curves[_backendId] = CurveInfo({
             backendId: _backendId,
             curveName: _name,
@@ -181,19 +179,20 @@ function _onlyOwner() internal view {
         string calldata _regulatoryBody,
         string calldata _complianceStandard
     ) external onlyOwner {
-        _addJurisdiction(
-            _regionCode, _name, _approvedBackends,
-            _preferredBackend, _regulatoryBody, _complianceStandard
-        );
+        _addJurisdiction(_regionCode, _name, _approvedBackends, _preferredBackend, _regulatoryBody, _complianceStandard);
     }
 
-    function getJurisdictionDetails(string calldata _regionCode) external view returns (
-        string memory name,
-        bool isActive,
-        uint8 preferredBackend,
-        string memory regulatoryBody,
-        string memory complianceStandard
-    ) {
+    function getJurisdictionDetails(string calldata _regionCode)
+        external
+        view
+        returns (
+            string memory name,
+            bool isActive,
+            uint8 preferredBackend,
+            string memory regulatoryBody,
+            string memory complianceStandard
+        )
+    {
         // forge-lint: disable-next-line(asm-keccak256)
         bytes32 key = keccak256(abi.encode(_regionCode));
         JurisdictionConfig storage config = jurisdictions[key];

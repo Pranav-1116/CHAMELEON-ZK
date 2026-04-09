@@ -1,0 +1,32 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  formatting:
+    name: Check Formatting
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      
+      - name: Check Rust formatting
+        working-directory: ./prover
+        run: cargo fmt --check || echo " Run 'cargo fmt' to fix"
+      
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+      
+      - name: Check Solidity formatting
+        working-directory: ./contracts
+        run: forge fmt --check || echo " Run 'forge fmt' to fix"

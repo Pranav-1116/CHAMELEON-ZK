@@ -1,0 +1,29 @@
+groups:
+  - name: chameleon_alerts
+    interval: 30s
+    rules:
+      - alert: HighThreatLevel
+        expr: threat_score > 75
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical threat level detected"
+          description: "Threat score {{ $value }} exceeds 75"
+      
+      - alert: MorphFailure
+        expr: morph_failures_total > 0
+        for: 1m
+        labels:
+          severity: high
+        annotations:
+          summary: "Morph operation failed"
+      
+      - alert: HighGasCost
+        expr: gas_cost_wei > 1000000
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Gas costs are high"
+          description: "Current gas cost: {{ $value }} wei"

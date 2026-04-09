@@ -13,7 +13,7 @@ impl BackendType {
             BackendType::BLS12_381 => "BLS12-381",
         }
     }
-    
+
     pub fn security_bits(&self) -> u32 {
         match self {
             BackendType::BN254 => 100,

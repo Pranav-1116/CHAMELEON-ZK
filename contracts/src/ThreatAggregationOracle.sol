@@ -8,7 +8,6 @@ pragma solidity ^0.8.20;
  *      into a unified threat assessment for the Chameleon-ZK system
  */
 contract CryptoHealthOracle {
-
     enum ThreatCategory {
         CRYPTOGRAPHIC_WEAKNESS,
         IMPLEMENTATION_VULN,
@@ -46,12 +45,7 @@ contract CryptoHealthOracle {
 
     event ReporterAdded(address indexed reporter);
     event ReporterRemoved(address indexed reporter);
-    event ThreatReported(
-        address indexed reporter,
-        ThreatCategory indexed category,
-        uint8 score,
-        string description
-    );
+    event ThreatReported(address indexed reporter, ThreatCategory indexed category, uint8 score, string description);
     event OverallScoreUpdated(uint8 newScore, uint256 timestamp);
     event MorphRecommended(uint8 score, string reason);
 
@@ -69,20 +63,23 @@ contract CryptoHealthOracle {
     }
 
     modifier onlyOwner() {
-       _onlyOwner();
+        _onlyOwner();
         _;
     }
-    function _onlyOwner () internal view {
-         require(msg.sender == owner, "Not owner");
+
+    function _onlyOwner() internal view {
+        require(msg.sender == owner, "Not owner");
     }
 
     modifier onlyReporter() {
-       _onlyRepoter();
+        _onlyRepoter();
         _;
     }
- function _onlyRepoter () internal view {
-     require(isReporter[msg.sender], "Not authorized reporter");
- }
+
+    function _onlyRepoter() internal view {
+        require(isReporter[msg.sender], "Not authorized reporter");
+    }
+
     function addReporter(address _reporter) external onlyOwner {
         require(!isReporter[_reporter], "Already a reporter");
         isReporter[_reporter] = true;
@@ -105,18 +102,11 @@ contract CryptoHealthOracle {
         return count;
     }
 
-    function reportThreat(
-        ThreatCategory _category,
-        uint8 _score,
-        string calldata _description
-    ) external onlyReporter {
+    function reportThreat(ThreatCategory _category, uint8 _score, string calldata _description) external onlyReporter {
         require(_score <= 100, "Score must be 0-100");
         ThreatReport storage existing = latestReports[_category][msg.sender];
         if (existing.timestamp > 0) {
-            require(
-                block.timestamp >= existing.timestamp + reportCooldown,
-                "Report cooldown active"
-            );
+            require(block.timestamp >= existing.timestamp + reportCooldown, "Report cooldown active");
         }
         latestReports[_category][msg.sender] = ThreatReport({
             reporter: msg.sender,
@@ -135,11 +125,7 @@ contract CryptoHealthOracle {
         uint8[] calldata _scores,
         string[] calldata _descriptions
     ) external onlyReporter {
-        require(
-            _categories.length == _scores.length &&
-            _scores.length == _descriptions.length,
-            "Array length mismatch"
-        );
+        require(_categories.length == _scores.length && _scores.length == _descriptions.length, "Array length mismatch");
         for (uint256 i = 0; i < _categories.length; i++) {
             require(_scores[i] <= 100, "Score must be 0-100");
             latestReports[_categories[i]][msg.sender] = ThreatReport({
@@ -171,10 +157,7 @@ contract CryptoHealthOracle {
         // forge-lint: disable-next-line(unsafe-typecast)
         uint8 avgScore = reportCount > 0 ? uint8(totalScore / reportCount) : 0;
         aggregatedThreats[_category] = AggregatedThreat({
-            averageScore: avgScore,
-            maxScore: maxScore,
-            reportCount: reportCount,
-            lastUpdated: block.timestamp
+            averageScore: avgScore, maxScore: maxScore, reportCount: reportCount, lastUpdated: block.timestamp
         });
     }
 
@@ -187,7 +170,7 @@ contract CryptoHealthOracle {
             weightedSum += catScore * weight;
         }
         // casting to uint8 is safe because score is bounded to 0–100
-// forge-lint: disable-next-line(unsafe-typecast)
+        // forge-lint: disable-next-line(unsafe-typecast)
         overallThreatScore = uint8(weightedSum / 100);
         scoreHistory.push(overallThreatScore);
         scoreTimestamps.push(block.timestamp);
@@ -218,13 +201,11 @@ contract CryptoHealthOracle {
         return "LOW";
     }
 
-    function getAllCategoryScores() external view returns (
-        uint8 cryptographic,
-        uint8 implementation,
-        uint8 regulatory,
-        uint8 networkAttack,
-        uint8 hardware
-    ) {
+    function getAllCategoryScores()
+        external
+        view
+        returns (uint8 cryptographic, uint8 implementation, uint8 regulatory, uint8 networkAttack, uint8 hardware)
+    {
         cryptographic = aggregatedThreats[ThreatCategory.CRYPTOGRAPHIC_WEAKNESS].averageScore;
         implementation = aggregatedThreats[ThreatCategory.IMPLEMENTATION_VULN].averageScore;
         regulatory = aggregatedThreats[ThreatCategory.REGULATORY_CHANGE].averageScore;
@@ -241,14 +222,11 @@ contract CryptoHealthOracle {
         return (scoreHistory[index], scoreTimestamps[index]);
     }
 
-    function getReport(
-        ThreatCategory _category,
-        address _reporter
-    ) external view returns (
-        uint8 score,
-        uint256 timestamp,
-        string memory description
-    ) {
+    function getReport(ThreatCategory _category, address _reporter)
+        external
+        view
+        returns (uint8 score, uint256 timestamp, string memory description)
+    {
         ThreatReport storage report = latestReports[_category][_reporter];
         return (report.score, report.timestamp, report.description);
     }
@@ -269,12 +247,8 @@ contract CryptoHealthOracle {
     function emergencyReset() external onlyOwner {
         for (uint8 i = 0; i < 5; i++) {
             ThreatCategory cat = ThreatCategory(i);
-            aggregatedThreats[cat] = AggregatedThreat({
-                averageScore: 0,
-                maxScore: 0,
-                reportCount: 0,
-                lastUpdated: block.timestamp
-            });
+            aggregatedThreats[cat] =
+                AggregatedThreat({averageScore: 0, maxScore: 0, reportCount: 0, lastUpdated: block.timestamp});
         }
         overallThreatScore = 0;
         scoreHistory.push(0);

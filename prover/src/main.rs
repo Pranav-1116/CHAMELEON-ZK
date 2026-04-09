@@ -1,18 +1,18 @@
-mod types;
-mod circuit;
-mod bn254_backend;
 mod bls12_381_backend;
-mod morph;
+mod bn254_backend;
+mod circuit;
 mod cli;
+mod morph;
+mod types;
 
-use bn254_backend::BN254Backend;
 use bls12_381_backend::BLS12_381Backend;
+use bn254_backend::BN254Backend;
 use clap::Parser;
 use cli::Cli;
 use cli::Commands;
-use std::time::Instant;
 use std::fs;
 use std::path::Path;
+use std::time::Instant;
 #[allow(dead_code)]
 fn main() {
     let cli = Cli::parse();
@@ -21,7 +21,12 @@ fn main() {
         Commands::Status => {
             do_status();
         }
-        Commands::Prove { backend, a, b, output } => {
+        Commands::Prove {
+            backend,
+            a,
+            b,
+            output,
+        } => {
             do_prove(backend, a, b, output);
         }
         Commands::Verify { proof } => {
@@ -69,18 +74,18 @@ fn do_prove(backend: String, a: u64, b: u64, output: String) {
             let mut be = BN254Backend::new();
             println!("[1/4] Running setup...");
             be.setup().expect("Setup failed");
-            
+
             println!("[2/4] Generating proof...");
             let proof = be.prove(a, b).expect("Prove failed");
-            
+
             println!("[3/4] Verifying proof...");
             let valid = be.verify(&proof).expect("Verify failed");
-            
+
             let elapsed = start.elapsed();
-            
+
             println!("[4/4] Saving proof...");
             save_proof(&output, "BN254", a, b, &proof);
-            
+
             println!("");
             println!("SUCCESS!");
             println!("  Result:     {} x {} = {}", a, b, proof.public_inputs[0]);
@@ -93,18 +98,18 @@ fn do_prove(backend: String, a: u64, b: u64, output: String) {
             let mut be = BLS12_381Backend::new();
             println!("[1/4] Running setup...");
             be.setup().expect("Setup failed");
-            
+
             println!("[2/4] Generating proof...");
             let proof = be.prove(a, b).expect("Prove failed");
-            
+
             println!("[3/4] Verifying proof...");
             let valid = be.verify(&proof).expect("Verify failed");
-            
+
             let elapsed = start.elapsed();
-            
+
             println!("[4/4] Saving proof...");
             save_proof(&output, "BLS12-381", a, b, &proof);
-            
+
             println!("");
             println!("SUCCESS!");
             println!("  Result:     {} x {} = {}", a, b, proof.public_inputs[0]);
@@ -191,8 +196,8 @@ fn do_verify(proof_path: String) {
     println!("      Use 'benchmark' command for full prove/verify demo.");
 }
 fn do_morph(to: String) {
-   println!("                    MORPHING BACKEND");
-   match to.to_lowercase().as_str() {
+    println!("                    MORPHING BACKEND");
+    match to.to_lowercase().as_str() {
         "bn254" => {
             println!("Switching to: BN254");
             println!("Security:     100-bit");
@@ -239,7 +244,7 @@ fn do_benchmark(iterations: u32) {
     println!("  Prove        | {:>10}ms | {:>10}ms", r1.1, r2.1);
     println!("  Verify       | {:>10}ms | {:>10}ms", r1.2, r2.2);
     println!("  Proof Size   | {:>10} B | {:>10} B", r1.3, r2.3);
-    println!("  Status       | {:>12}   | {:>12}"  , r1.4, r2.4);
+    println!("  Status       | {:>12}   | {:>12}", r1.4, r2.4);
     println!("");
     println!("Both backends operational!");
 }
@@ -261,7 +266,11 @@ fn do_simulate(threat: String, level: u32) {
     println!("");
     println!("  Levels:");
     println!("    Quantum:    {:>3}/100 {}", quantum, make_bar(quantum));
-    println!("    Regulatory: {:>3}/100 {}", regulatory, make_bar(regulatory));
+    println!(
+        "    Regulatory: {:>3}/100 {}",
+        regulatory,
+        make_bar(regulatory)
+    );
     println!("    Overall:    {:>3}/100 {}", overall, make_bar(overall));
     println!("");
 

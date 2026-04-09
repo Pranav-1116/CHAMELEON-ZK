@@ -9,38 +9,36 @@ import {UniversalVerifier} from "./UniversalVerifier.sol";
  * @dev Manages threat levels and automatic morph triggers
  */
 contract MorphController {
-    
     UniversalVerifier public verifier;
-    
+
     // Threat levels
     uint8 public constant THREAT_LOW = 0;
     uint8 public constant THREAT_MEDIUM = 1;
     uint8 public constant THREAT_HIGH = 2;
     uint8 public constant THREAT_CRITICAL = 3;
-    
+
     // Current threat assessment
     uint8 public currentThreatLevel;
     uint256 public lastThreatUpdate;
-    
+
     // Threat thresholds for auto-morph
     uint8 public autoMorphThreshold;
-    
+
     // Events
     event ThreatLevelUpdated(uint8 oldLevel, uint8 newLevel, uint256 timestamp);
     event AutoMorphTriggered(uint8 fromBackend, uint8 toBackend, uint8 threatLevel);
-    
+
     address public owner;
-    
-   modifier onlyOwner() {
-    _onlyOwner();
-    _;
-}
 
-function _onlyOwner() internal view {
-    require(msg.sender == owner, "Not owner");
-}
+    modifier onlyOwner() {
+        _onlyOwner();
+        _;
+    }
 
-    
+    function _onlyOwner() internal view {
+        require(msg.sender == owner, "Not owner");
+    }
+
     constructor(address _verifier) {
         owner = msg.sender;
         verifier = UniversalVerifier(_verifier);
@@ -48,21 +46,21 @@ function _onlyOwner() internal view {
         autoMorphThreshold = THREAT_HIGH;
         lastThreatUpdate = block.timestamp;
     }
-    
+
     /**
      * @notice Update the current threat level
      * @param newLevel The new threat level (0-3)
      */
     function updateThreatLevel(uint8 newLevel) external onlyOwner {
         require(newLevel <= THREAT_CRITICAL, "Invalid threat level");
-        
+
         uint8 oldLevel = currentThreatLevel;
         currentThreatLevel = newLevel;
         lastThreatUpdate = block.timestamp;
-        
+
         emit ThreatLevelUpdated(oldLevel, newLevel, block.timestamp);
     }
-    
+
     /**
      * @notice Set the threshold for automatic morphing
      * @param threshold Threat level that triggers auto-morph
@@ -71,14 +69,14 @@ function _onlyOwner() internal view {
         require(threshold <= THREAT_CRITICAL, "Invalid threshold");
         autoMorphThreshold = threshold;
     }
-    
+
     /**
      * @notice Check if auto-morph should be triggered
      */
     function shouldAutoMorph() public view returns (bool) {
         return currentThreatLevel >= autoMorphThreshold;
     }
-    
+
     /**
      * @notice Get recommended backend based on threat level
      * @return Recommended backend ID
@@ -91,7 +89,7 @@ function _onlyOwner() internal view {
             return verifier.BACKEND_BN254();
         }
     }
-    
+
     /**
      * @notice Get threat level name
      */
@@ -102,7 +100,7 @@ function _onlyOwner() internal view {
         if (currentThreatLevel == THREAT_CRITICAL) return "CRITICAL";
         return "UNKNOWN";
     }
-    
+
     /**
      * @notice Get time since last threat update
      */
