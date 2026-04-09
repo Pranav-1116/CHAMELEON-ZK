@@ -1,0 +1,25 @@
+# Git
+.git
+.gitignore
+
+# Build artifacts
+prover/target/
+circuits/build/
+contracts/out/
+contracts/cache/
+
+# Node modules
+node_modules/
+circuits/node_modules/
+
+# Env files
+.env
+.env.*
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db

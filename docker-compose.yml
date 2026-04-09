@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # Local Ethereum node
+  anvil:
+    image: ghcr.io/foundry-rs/foundry:latest
+    command: anvil --host 0.0.0.0 --chain-id 31337
+    ports:
+      - "8545:8545"
+    networks:
+      - chameleon-network
+  
+  # Prover service
+  prover:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - anvil
+    environment:
+      - RPC_URL=http://anvil:8545
+      - RUST_LOG=info
+    volumes:
+      - ./prover/output:/app/output
+      - ./simulator/logs:/app/logs
+    networks:
+      - chameleon-network
+
+networks:
+  chameleon-network:
+    driver: bridge
