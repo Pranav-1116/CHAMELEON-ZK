@@ -1,0 +1,72 @@
+# .github/workflows/deploy.yml
+name: Deploy to Testnet/Mainnet
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: 'Network to deploy to'
+        required: true
+        type: choice
+        options:
+          - sepolia
+          - mainnet
+      
+env:
+  FOUNDRY_PROFILE: ci
+
+jobs:
+  deploy:
+    name: Deploy Contracts
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+      
+      - name: Deploy to ${{ github.event.inputs.network }}
+        working-directory: ./contracts
+        env:
+          PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+        run: |
+          if [ "${{ github.event.inputs.network }}" = "mainnet" ]; then
+            RPC_URL="${{ secrets.MAINNET_RPC_URL }}"
+          else
+            RPC_URL="${{ secrets.SEPOLIA_RPC_URL }}"
+          fi
+          
+          forge script script/Deploy.s.sol \
+            --rpc-url $RPC_URL \
+            --private-key $PRIVATE_KEY \
+            --broadcast \
+            --verify \
+            --etherscan-api-key $ETHERSCAN_API_KEY
+      
+      - name: Save deployment addresses
+        run: |
+          echo "Deployment on ${{ github.event.inputs.network }}" > deployment.txt
+          echo "Timestamp: $(date)" >> deployment.txt
+          cat contracts/broadcast/Deploy.s.sol/**/run-latest.json >> deployment.txt
+      
+      - name: Upload deployment info
+        uses: actions/upload-artifact@v3
+        with:
+          name: deployment-${{ github.event.inputs.network }}
+          path: deployment.txt
+      
+      - name: Create GitHub Release
+        if: github.event.inputs.network == 'mainnet'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Mainnet Deployment ${{ github.run_number }}
+          body: |
+            Deployed to Ethereum Mainnet
+            Commit: ${{ github.sha }}
+            Deployer: ${{ github.actor }}

@@ -1,0 +1,46 @@
+# .github/workflows/benchmark.yml
+name: Performance Benchmarks
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Run benchmarks every Sunday at 00:00 UTC
+    - cron: '0 0 * * 0'
+
+jobs:
+  benchmark:
+    name: Run Performance Benchmarks
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      
+      - name: Build prover
+        working-directory: ./prover
+        run: cargo build --release
+      
+      - name: Run benchmarks
+        working-directory: ./benchmarks
+        run: ./run_benchmarks.sh
+      
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v3
+        with:
+          name: benchmark-results
+          path: benchmarks/results/
+      
+      - name: Comment on commit (if performance degrades)
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const latest = fs.readFileSync('benchmarks/results/latest.txt', 'utf8');
+            // Parse and compare with baseline
+            // Comment if performance degrades >10%
