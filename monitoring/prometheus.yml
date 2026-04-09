@@ -1,0 +1,21 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'chameleon-prover'
+    static_configs:
+      - targets: ['prover:9090']
+    metrics_path: '/metrics'
+  
+  - job_name: 'ethereum-node'
+    static_configs:
+      - targets: ['anvil:8545']
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+rule_files:
+  - 'alerts.yml'
