@@ -1,0 +1,47 @@
+name: Code Quality
+
+on: [push, pull_request]
+
+jobs:
+  formatting:
+    name: Check Formatting
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: rustfmt
+      
+      - name: Check Rust formatting
+        working-directory: ./prover
+        run: cargo fmt -- --check
+      
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+      
+      - name: Check Solidity formatting
+        working-directory: ./contracts
+        run: forge fmt --check
+  
+  linting:
+    name: Linting
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: clippy
+      
+      - name: Run clippy
+        working-directory: ./prover
+        run: cargo clippy -- -D warnings
